@@ -1,145 +1,219 @@
-<!-- ⚙️ SCRIPT LOGIQUE SUPABASE (VERSION REDIRECTION AUTOMATIQUE) -->
-<script>
-    // 1. Tes clés Supabase
-    const SUPABASE_URL = "https://kiarcshzgolzncdidnpj.supabase.co"; // Remplace par ton URL
-    const SUPABASE_KEY = "sb_publishable_oWotd3kAm3ub2oAl-tHDIw_QoZzPg3R"; // Ta clef publishable
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sitoow Editing — Portfolio</title>
+    <!-- Script officiel Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; color: #f8fafc; margin: 0; padding: 20px; }
+        header { text-align: center; padding: 40px 0; }
+        
+        /* GRILLE DE VIDÉOS */
+        .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
+        .video-card { background: #1e293b; border-radius: 10px; overflow: hidden; border: 1px solid #334155; position: relative; }
+        .video-card img { width: 100%; height: 180px; object-fit: cover; }
+        .video-card-content { padding: 15px; }
+        .video-card h3 { margin: 0 0 10px 0; font-size: 18px; }
+        .video-card a { color: #38bdf8; text-decoration: none; font-weight: bold; }
 
-    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        /* BOUTON SUPPRIMER (ADMIN UNIQUEMENT) */
+        .btn-delete { background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; margin-top: 10px; display: none; }
 
-    let isAdmin = false;
+        /* BARRE / BOUTONS ADMIN */
+        .admin-only { display: none; } /* Masqué par défaut pour les visiteurs */
+        
+        #admin-bar { background: #1e293b; border: 2px solid #38bdf8; padding: 20px; border-radius: 12px; max-width: 600px; margin: 0 auto 40px auto; }
+        #admin-bar input { width: calc(100% - 20px); padding: 10px; margin: 8px 0; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 6px; }
+        
+        button.btn-primary { background: #0284c7; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        button.btn-danger { background: #dc2626; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
 
-    // 2. Initialisation au chargement de la page
-    async function init() {
-        const { data } = await _supabase.auth.getSession();
-        if (data && data.session) {
-            setAdminMode(true);
-        } else {
+        /* MODALE DE CONNEXION */
+        #login-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; }
+        .modal-content { background: #1e293b; padding: 30px; border-radius: 12px; width: 300px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Sitoow Editing 🎬</h1>
+        <p>Portfolio des créations vidéo</p>
+    </header>
+
+    <!-- 🟢 ZONE ADMIN : FORMULAIRE D'AJOUT (Visible uniquement une fois connecté) -->
+    <div id="admin-bar" class="admin-only">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2 style="margin:0; color: #38bdf8;">Mode Admin Actif ⚙️</h2>
+            <button class="btn-danger" onclick="logout()">Déconnexion</button>
+        </div>
+        <hr style="border-color: #334155; margin: 15px 0;">
+        <h3>Ajouter une nouvelle vidéo</h3>
+        <input type="text" id="v-title" placeholder="Titre de la vidéo">
+        <input type="text" id="v-link" placeholder="Lien (YouTube / TikTok / Drive)">
+        <input type="text" id="v-thumb" placeholder="Lien de l'image de miniature">
+        <button class="btn-primary" onclick="addVideo()">Publier sur le site</button>
+        <p id="admin-msg"></p>
+    </div>
+
+    <!-- 🎬 SECTION PRINCIPALE : LES VIDÉOS DU SITE -->
+    <main class="video-grid" id="videos-container">
+        <!-- Les vidéos s'afficheront ici automatiquement -->
+    </main>
+
+    <!-- 🔒 PIED DE PAGE : BOUTON DISCRET POUR TE CONNECTER -->
+    <footer style="text-align: center; margin-top: 60px; padding: 20px;">
+        <button id="login-trigger-btn" onclick="openLoginModal()" style="background: transparent; border: none; color: #475569; cursor: pointer;">🔒 Connexion Admin</button>
+    </footer>
+
+    <!-- FENÊTRE DE CONNEXION (MODALE) -->
+    <div id="login-modal">
+        <div class="modal-content">
+            <h3>Connexion Admin</h3>
+            <input type="email" id="email" placeholder="E-mail" style="width: 90%; padding: 8px; margin-bottom: 10px;">
+            <input type="password" id="password" placeholder="Mot de passe" style="width: 90%; padding: 8px; margin-bottom: 10px;">
+            <button class="btn-primary" onclick="login()" style="width: 100%;">Se connecter</button>
+            <button onclick="closeLoginModal()" style="width: 100%; margin-top: 5px; background: transparent; color: #94a3b8; border: none; cursor: pointer;">Annuler</button>
+            <p id="login-error" style="color: #ef4444; font-size: 14px; text-align: center;"></p>
+        </div>
+    </div>
+
+    <!-- ⚙️ SCRIPT LOGIQUE SUPABASE -->
+    <script>
+        // 1. Tes clés Supabase
+        const SUPABASE_URL = "https://TON_PROJET.supabase.co"; // Remplace par ton URL
+        const SUPABASE_KEY = "sb_publishable_oWotd3kAm3ub2oAl-tHDIw_QoZzPg3R"; // Ta clef publishable
+
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let isAdmin = false;
+
+        // 2. Vérifier la session au chargement
+        async function init() {
+            const { data } = await _supabase.auth.getSession();
+            if (data.session) {
+                setAdminMode(true);
+            }
+            loadVideos();
+        }
+
+        // Active ou désactive l'affichage de l'interface Admin
+        function setAdminMode(active) {
+            isAdmin = active;
+            const adminElements = document.querySelectorAll('.admin-only');
+            const loginBtn = document.getElementById('login-trigger-btn');
+            
+            adminElements.forEach(el => el.style.display = active ? 'block' : 'none');
+            
+            if (loginBtn) {
+                loginBtn.style.display = active ? 'none' : 'inline-block';
+            }
+            
+            // Met à jour l'affichage des boutons de suppression
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.style.display = active ? 'inline-block' : 'none';
+            });
+        }
+
+        // 3. Charger les vidéos depuis la base de données
+        async function loadVideos() {
+            const container = document.getElementById('videos-container');
+            container.innerHTML = '<p>Chargement des vidéos...</p>';
+
+            const { data: videos, error } = await _supabase.from('videos').select('*').order('created_at', { ascending: false });
+
+            if (error) {
+                container.innerHTML = '<p>Erreur lors du chargement des vidéos.</p>';
+                return;
+            }
+
+            if (videos.length === 0) {
+                container.innerHTML = '<p>Aucune vidéo publiée pour le moment.</p>';
+                return;
+            }
+
+            container.innerHTML = '';
+            videos.forEach(video => {
+                const card = document.createElement('div');
+                card.className = 'video-card';
+                card.innerHTML = `
+                    <img src="${video.thumb || 'https://via.placeholder.com/300x180'}" alt="${video.title}">
+                    <div class="video-card-content">
+                        <h3>${video.title}</h3>
+                        <a href="${video.link}" target="_blank">Voir la vidéo ↗</a>
+                        <br>
+                        <button class="btn-delete admin-only" style="display: ${isAdmin ? 'inline-block' : 'none'};" onclick="deleteVideo(${video.id})">🗑️ Supprimer</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // 4. Ajouter une vidéo
+        async function addVideo() {
+            const title = document.getElementById('v-title').value;
+            const link = document.getElementById('v-link').value;
+            const thumb = document.getElementById('v-thumb').value;
+            const msg = document.getElementById('admin-msg');
+
+            if (!title || !link) {
+                msg.style.color = '#ef4444';
+                msg.innerText = "Remplis au moins le titre et le lien !";
+                return;
+            }
+
+            const { error } = await _supabase.from('videos').insert([{ title, link, thumb }]);
+
+            if (error) {
+                msg.style.color = '#ef4444';
+                msg.innerText = "Erreur : " + error.message;
+            } else {
+                msg.style.color = '#22c55e';
+                msg.innerText = "✅ Vidéo ajoutée en direct !";
+                document.getElementById('v-title').value = '';
+                document.getElementById('v-link').value = '';
+                document.getElementById('v-thumb').value = '';
+                loadVideos(); // Rafraîchit les vidéos immédiatement
+            }
+        }
+
+        // 5. Supprimer une vidéo
+        async function deleteVideo(id) {
+            if (confirm("Veux-tu vraiment supprimer cette vidéo ?")) {
+                await _supabase.from('videos').delete().eq('id', id);
+                loadVideos();
+            }
+        }
+
+        // 6. Gestion de la connexion / déconnexion
+        async function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const err = document.getElementById('login-error');
+
+            const { error } = await _supabase.auth.signInWithPassword({ email, password });
+
+            if (error) {
+                err.innerText = "Identifiants incorrects";
+            } else {
+                closeLoginModal();
+                setAdminMode(true);
+                loadVideos();
+            }
+        }
+
+        async function logout() {
+            await _supabase.auth.signOut();
             setAdminMode(false);
-        }
-        loadVideos();
-    }
-
-    // Affiche/Masque la barre d'administration sur le site
-    function setAdminMode(active) {
-        isAdmin = active;
-        const adminBar = document.getElementById('admin-bar');
-        const loginBtn = document.getElementById('login-trigger-btn');
-        
-        if (adminBar) adminBar.style.display = active ? 'block' : 'none';
-        if (loginBtn) loginBtn.style.display = active ? 'none' : 'inline-block';
-        
-        // Affiche ou masque les boutons "Supprimer" sur les cartes de vidéos
-        document.querySelectorAll('.btn-delete').forEach(btn => {
-            btn.style.display = active ? 'inline-block' : 'none';
-        });
-    }
-
-    // 3. Fonction de Connexion avec Fermeture + Redirection automatique
-    async function login() {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const err = document.getElementById('login-error');
-
-        err.innerText = "Connexion en cours...";
-
-        const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
-
-        if (error) {
-            err.innerText = "Identifiants incorrects !";
-        } else {
-            // Ferme la pop-up de connexion
-            closeLoginModal();
-            // Active le mode admin sur le site
-            setAdminMode(true);
-            // Recharge la liste des vidéos
-            loadVideos();
-            // Recharge la page pour nettoyer l'interface
-            window.location.reload();
-        }
-    }
-
-    // 4. Déconnexion
-    async function logout() {
-        await _supabase.auth.signOut();
-        setAdminMode(false);
-        window.location.reload();
-    }
-
-    // 5. Charger les vidéos depuis la base de données
-    async function loadVideos() {
-        const container = document.getElementById('videos-container');
-        if (!container) return;
-        
-        container.innerHTML = '<p>Chargement des vidéos...</p>';
-
-        const { data: videos, error } = await _supabase.from('videos').select('*').order('created_at', { ascending: false });
-
-        if (error) {
-            container.innerHTML = '<p>Erreur lors du chargement des vidéos.</p>';
-            return;
-        }
-
-        if (!videos || videos.length === 0) {
-            container.innerHTML = '<p>Aucune vidéo publiée pour le moment.</p>';
-            return;
-        }
-
-        container.innerHTML = '';
-        videos.forEach(video => {
-            const card = document.createElement('div');
-            card.className = 'video-card';
-            card.innerHTML = `
-                <img src="${video.thumb || 'https://via.placeholder.com/300x180'}" alt="${video.title}">
-                <div class="video-card-content">
-                    <h3>${video.title}</h3>
-                    <a href="${video.link}" target="_blank">Voir la vidéo ↗</a>
-                    <br>
-                    <button class="btn-delete" style="display: ${isAdmin ? 'inline-block' : 'none'}; background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; margin-top: 10px;" onclick="deleteVideo(${video.id})">🗑️ Supprimer</button>
-                </div>
-            `;
-            container.appendChild(card);
-        });
-    }
-
-    // 6. Ajouter une vidéo en direct
-    async function addVideo() {
-        const title = document.getElementById('v-title').value;
-        const link = document.getElementById('v-link').value;
-        const thumb = document.getElementById('v-thumb').value;
-        const msg = document.getElementById('admin-msg');
-
-        if (!title || !link) {
-            msg.style.color = '#ef4444';
-            msg.innerText = "Remplis au moins le titre et le lien !";
-            return;
-        }
-
-        const { error } = await _supabase.from('videos').insert([{ title, link, thumb }]);
-
-        if (error) {
-            msg.style.color = '#ef4444';
-            msg.innerText = "Erreur : " + error.message;
-        } else {
-            msg.style.color = '#22c55e';
-            msg.innerText = "✅ Vidéo ajoutée en direct !";
-            document.getElementById('v-title').value = '';
-            document.getElementById('v-link').value = '';
-            document.getElementById('v-thumb').value = '';
             loadVideos();
         }
-    }
 
-    // 7. Supprimer une vidéo
-    async function deleteVideo(id) {
-        if (confirm("Veux-tu vraiment supprimer cette vidéo ?")) {
-            await _supabase.from('videos').delete().eq('id', id);
-            loadVideos();
-        }
-    }
+        function openLoginModal() { document.getElementById('login-modal').style.display = 'flex'; }
+        function closeLoginModal() { document.getElementById('login-modal').style.display = 'none'; }
 
-    function openLoginModal() { document.getElementById('login-modal').style.display = 'flex'; }
-    function closeLoginModal() { document.getElementById('login-modal').style.display = 'none'; }
-
-    // Démarrage automatique
-    init();
-</script>
+        // Lancement au chargement
+        init();
+    </script>
+</body>
+</html>
