@@ -1,0 +1,23 @@
+backend:
+  name: git-gateway
+  branch: main # Si ta branche s'appelle 'master', remplace 'main' par 'master'
+
+media_folder: "assets/images"
+public_folder: "/assets/images"
+
+collections:
+  - name: "videos"
+    label: "Mes Vidéos"
+    files:
+      - file: "data/videos.json"
+        label: "Liste des vidéos"
+        name: "videos_list"
+        fields:
+          - label: "Vidéos YouTube"
+            name: "youtube"
+            widget: "list"
+            fields:
+              - {label: "Titre", name: "title", widget: "string"}
+              - {label: "Tag", name: "tag", widget: "string", default: "YouTube"}
+              - {label: "Lien de la vidéo", name: "link", widget: "string"}
+              - {label: "URL Miniature", name: "thumb", widget: "string"}
