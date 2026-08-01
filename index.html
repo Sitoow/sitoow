@@ -3,378 +3,217 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sitoow Editing — Monteur Vidéo</title>
+    <title>Sitoow Editing — Portfolio</title>
+    <!-- Script officiel Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root {
-            --bg-color: #000000;
-            --card-bg: #161617;
-            --text-primary: #f5f5f7;
-            --text-secondary: #86868b;
-            --accent-blue: #0071e3;
-            --accent-blue-hover: #0077ed;
-            --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; color: #f8fafc; margin: 0; padding: 20px; }
+        header { text-align: center; padding: 40px 0; }
+        
+        /* GRILLE DE VIDÉOS */
+        .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
+        .video-card { background: #1e293b; border-radius: 10px; overflow: hidden; border: 1px solid #334155; position: relative; }
+        .video-card img { width: 100%; height: 180px; object-fit: cover; }
+        .video-card-content { padding: 15px; }
+        .video-card h3 { margin: 0 0 10px 0; font-size: 18px; }
+        .video-card a { color: #38bdf8; text-decoration: none; font-weight: bold; }
 
-        html { scroll-behavior: smooth; }
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-        body { font-family: var(--font-family); background-color: var(--bg-color); color: var(--text-primary); overflow-x: hidden; }
+        /* BOUTON SUPPRIMER (ADMIN UNIQUEMENT) */
+        .btn-delete { background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; margin-top: 10px; display: none; }
 
-        /* Navigation Style Apple */
-        nav {
-            position: fixed; top: 0; width: 100%; height: 44px;
-            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            z-index: 999; display: flex; justify-content: center; align-items: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .nav-content { width: 100%; max-width: 980px; padding: 0 22px; display: flex; justify-content: space-between; align-items: center; }
-        .nav-logo { font-size: 19px; font-weight: 600; color: var(--text-primary); text-decoration: none; cursor: pointer; }
-        .nav-links { display: flex; gap: 32px; list-style: none; align-items: center; }
-        .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 12px; transition: color 0.3s ease; cursor: pointer; }
-        .nav-links a:hover { color: var(--text-primary); }
+        /* BARRE / BOUTONS ADMIN */
+        .admin-only { display: none; } /* Masqué par défaut pour les visiteurs */
+        
+        #admin-bar { background: #1e293b; border: 2px solid #38bdf8; padding: 20px; border-radius: 12px; max-width: 600px; margin: 0 auto 40px auto; }
+        #admin-bar input { width: calc(100% - 20px); padding: 10px; margin: 8px 0; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 6px; }
+        
+        button.btn-primary { background: #0284c7; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        button.btn-danger { background: #dc2626; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
 
-        .ribbon { margin-top: 44px; background-color: #1d1d1f; text-align: center; padding: 12px 20px; font-size: 14px; color: var(--text-secondary); }
-        .ribbon button { background: none; border: none; color: var(--accent-blue); font-size: 14px; cursor: pointer; font-family: inherit; }
-        .ribbon button:hover { text-decoration: underline; }
-
-        /* Hero Section */
-        .hero { padding: 80px 20px 60px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(circle at 50% 30%, #1c2541 0%, #000000 70%); }
-        .hero-tag { font-size: 17px; font-weight: 600; color: var(--accent-blue); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
-        .hero h1 { font-size: 56px; line-height: 1.07143; font-weight: 600; margin-bottom: 12px; }
-        .hero h2 { font-size: 28px; font-weight: 400; color: var(--text-secondary); margin-bottom: 24px; max-width: 600px; }
-        .cta-buttons { display: flex; gap: 16px; align-items: center; margin-bottom: 40px; }
-        .btn-primary { background-color: var(--accent-blue); color: #ffffff; padding: 11px 21px; border-radius: 980px; font-size: 17px; text-decoration: none; transition: all 0.3s ease; border: none; cursor: pointer; }
-        .btn-primary:hover { background-color: var(--accent-blue-hover); }
-        .btn-secondary { color: var(--accent-blue); font-size: 17px; background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 4px; font-family: inherit; }
-        .btn-secondary:hover { text-decoration: underline; }
-
-        .hero-showcase { width: 100%; max-width: 1000px; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); background: #111; }
-        .hero-showcase video { width: 100%; display: block; }
-
-        .section-title { text-align: center; font-size: 40px; font-weight: 600; margin: 80px 0 40px 0; scroll-margin-top: 60px; }
-        #clients, #chiffres { scroll-margin-top: 60px; }
-
-        .grid-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .card { background-color: var(--card-bg); border-radius: 24px; padding: 36px 28px 28px 28px; display: grid; grid-template-rows: auto 1fr auto auto; gap: 16px; border: 1px solid rgba(255, 255, 255, 0.05); transition: transform 0.4s ease; }
-        .card:hover { transform: scale(1.02); }
-        .card-title { font-size: 26px; font-weight: 600; margin: 0; min-height: 2.4em; }
-        .card-description { font-size: 15px; color: var(--text-secondary); line-height: 1.4; margin: 0; }
-        .card-media { width: 100%; height: 200px; border-radius: 14px; overflow: hidden; background: #000; }
-        .card-media video, .card-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .card-btn { background-color: rgba(255, 255, 255, 0.08); color: var(--text-primary); padding: 12px 18px; border-radius: 980px; font-size: 14px; font-weight: 500; border: 1px solid rgba(255, 255, 255, 0.12); cursor: pointer; transition: all 0.2s ease; width: 100%; font-family: inherit; }
-        .card-btn:hover { background-color: var(--accent-blue); border-color: var(--accent-blue); color: #ffffff; }
-
-        .client-card { background-color: var(--card-bg); border-radius: 24px; padding: 32px 24px; border: 1px solid rgba(255, 255, 255, 0.05); text-align: center; transition: transform 0.3s ease; display: grid; grid-template-rows: auto 1fr auto; gap: 16px; }
-        .client-card:hover { transform: translateY(-5px); }
-        .client-avatar { width: 70px; height: 70px; border-radius: 50%; margin: 0 auto 12px auto; background: linear-gradient(135deg, #2c2c2e, #3a3a3c); display: flex; align-items: center; justify-content: center; font-size: 28px; }
-        .client-card h3 { font-size: 22px; font-weight: 600; }
-        .client-card .client-role { font-size: 14px; color: var(--accent-blue); margin-bottom: 12px; }
-        .client-card p { font-size: 15px; color: var(--text-secondary); line-height: 1.4; }
-        .client-btn { background-color: rgba(255, 255, 255, 0.08); color: var(--text-primary); padding: 10px 18px; border-radius: 980px; font-size: 14px; border: 1px solid rgba(255, 255, 255, 0.12); cursor: pointer; width: 100%; font-family: inherit; }
-        .client-btn:hover { background-color: var(--accent-blue); color: #fff; }
-
-        .specs-section { background-color: #161617; margin: 80px 0; padding: 80px 20px; text-align: center; }
-        .specs-grid { max-width: 1000px; margin: 40px auto 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
-        .spec-item h4 { font-size: 48px; font-weight: 700; background: linear-gradient(180deg, #fff 0%, #86868b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .spec-item p { font-size: 15px; color: var(--text-secondary); }
-
-        /* GALERIE ET CRÉATIONS */
-        .gallery-page { display: none; padding-top: 80px; padding-bottom: 100px; min-height: 100vh; max-width: 1200px; margin: 0 auto; padding-left: 20px; padding-right: 20px; }
-        .gallery-page.active { display: block; }
-        .back-btn { background: rgba(255, 255, 255, 0.08); color: var(--text-primary); border: 1px solid rgba(255, 255, 255, 0.1); padding: 10px 20px; border-radius: 980px; font-size: 14px; cursor: pointer; transition: all 0.2s ease; margin-bottom: 30px; }
-        .back-btn:hover { background: rgba(255, 255, 255, 0.2); }
-
-        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 28px; margin-top: 40px; }
-        .video-item-card { background: var(--card-bg); border-radius: 18px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.08); transition: transform 0.3s ease; display: flex; flex-direction: column; position: relative; }
-        .video-item-card:hover { transform: translateY(-6px); border-color: rgba(255, 255, 255, 0.25); }
-
-        .video-item-header { padding: 16px 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: space-between; align-items: center; }
-        .video-item-title { font-size: 16px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .video-item-tag { font-size: 12px; color: var(--accent-blue); background: rgba(0, 113, 227, 0.15); padding: 4px 10px; border-radius: 20px; }
-
-        .video-item-thumb { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; cursor: pointer; text-decoration: none; display: block; overflow: hidden; }
-        .video-item-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
-        .video-item-card:hover .video-item-thumb img { transform: scale(1.05); }
-
-        .play-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); display: flex; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; }
-        .play-icon { width: 50px; height: 50px; background: var(--accent-blue); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #fff; font-size: 20px; }
-        .video-item-thumb:hover .play-overlay { opacity: 1; }
-
-        /* MODALE CONTACT */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 10000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: all 0.35s ease; }
-        .modal-overlay.active { opacity: 1; visibility: visible; }
-        .modal-card { background: #1d1d1f; border-radius: 20px; padding: 40px; max-width: 440px; width: 90%; text-align: center; border: 1px solid rgba(255, 255, 255, 0.1); transform: scale(0.85); transition: transform 0.35s ease; }
-        .modal-overlay.active .modal-card { transform: scale(1); }
-        .modal-card h3 { font-size: 26px; margin-bottom: 12px; }
-
-        .contact-box { background: rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 20px; margin: 20px 0; border: 1px solid rgba(255, 255, 255, 0.08); }
-        .discord-tag { background: #5865F2; color: #fff; padding: 12px 20px; border-radius: 12px; font-size: 20px; font-weight: 600; display: inline-block; margin-bottom: 16px; }
-        .email-btn { background: var(--accent-blue); color: #fff; padding: 12px 20px; border-radius: 12px; font-size: 15px; font-weight: 500; border: none; cursor: pointer; width: 100%; font-family: inherit; }
-        .close-btn { background: rgba(255, 255, 255, 0.1); color: var(--text-primary); border: none; padding: 10px 24px; border-radius: 980px; font-size: 15px; cursor: pointer; }
-
-        footer { background-color: #111113; padding: 40px 20px; font-size: 12px; color: var(--text-secondary); border-top: 1px solid rgba(255, 255, 255, 0.1); }
-        .footer-content { max-width: 980px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
-
-        .toast { position: absolute; top: 15px; left: 50%; transform: translateX(-50%) translateY(-10px); background: #34c759; color: #ffffff; padding: 8px 18px; border-radius: 20px; font-size: 13px; font-weight: 600; opacity: 0; pointer-events: none; transition: all 0.3s ease; }
-        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        /* MODALE DE CONNEXION */
+        #login-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; }
+        .modal-content { background: #1e293b; padding: 30px; border-radius: 12px; width: 300px; }
     </style>
 </head>
 <body>
 
-    <!-- Navigation -->
-    <nav>
-        <div class="nav-content">
-            <a onclick="showMainPage()" class="nav-logo">Sitoow Editing</a>
-            <ul class="nav-links">
-                <li><a onclick="showMainPage('#projets')">Projets</a></li>
-                <li><a onclick="showMainPage('#clients')">Clients</a></li>
-                <li><a onclick="showMainPage('#chiffres')">Chiffres</a></li>
-                <li><a onclick="openContactModal()">Contact</a></li>
-            </ul>
+    <header>
+        <h1>Sitoow Editing 🎬</h1>
+        <p>Portfolio des créations vidéo</p>
+    </header>
+
+    <!-- 🟢 ZONE ADMIN : FORMULAIRE D'AJOUT (Visible uniquement une fois connecté) -->
+    <div id="admin-bar" class="admin-only">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2 style="margin:0; color: #38bdf8;">Mode Admin Actif ⚙️</h2>
+            <button class="btn-danger" onclick="logout()">Déconnexion</button>
         </div>
-    </nav>
-
-    <!-- Page Principale -->
-    <div id="main-page">
-        <div class="ribbon">
-            Disponible pour de nouveaux projets de montage vidéo. <button onclick="openContactModal()">Me contacter &rsaquo;</button>
-        </div>
-
-        <section class="hero">
-            <span class="hero-tag">Sitoow Editing</span>
-            <h1>Montage Vidéo.</h1>
-            <h2>Repensé avec précision, rythme et émotion.</h2>
-            <div class="cta-buttons">
-                <a href="#projets" class="btn-primary">Voir les créations</a>
-                <button class="btn-secondary" onclick="openContactModal()">Me contacter &rsaquo;</button>
-            </div>
-            <div class="hero-showcase">
-                <video autoplay loop muted playsinline poster="https://via.placeholder.com/1200x675/000000/ffffff?text=Remplacez+par+votre+Showreel.mp4">
-                    <source src="votre-showreel.mp4" type="video/mp4">
-                </video>
-            </div>
-        </section>
-
-        <h2 class="section-title" id="projets">Dernières Réalisations.</h2>
-        <div class="grid-container">
-            <div class="card">
-                <h3 class="card-title">Vidéos YouTube & Vlogs</h3>
-                <p class="card-description">Rythme dynamique, narration engageante et sound design immersif.</p>
-                <div class="card-media">
-                    <video autoplay loop muted playsinline poster="https://via.placeholder.com/600x337/111111/86868b?text=Aperçu+YouTube">
-                        <source src="projet-youtube.mp4" type="video/mp4">
-                    </video>
-                </div>
-                <button class="card-btn" onclick="openGallery('youtube')">Découvrir les créations &rsaquo;</button>
-            </div>
-
-            <div class="card">
-                <h3 class="card-title">Formats Courts & TikTok / Reels</h3>
-                <p class="card-description">Format vertical 9:16 optimisé avec sous-titres animés et effets visuels.</p>
-                <div class="card-media">
-                    <video autoplay loop muted playsinline poster="https://via.placeholder.com/600x337/111111/86868b?text=Aperçu+Shorts">
-                        <source src="projet-short.mp4" type="video/mp4">
-                    </video>
-                </div>
-                <button class="card-btn" onclick="openGallery('shorts')">Découvrir les créations &rsaquo;</button>
-            </div>
-
-            <div class="card">
-                <h3 class="card-title">Motion Design</h3>
-                <p class="card-description">Animations graphiques, étalonnage de couleur et habillage sur mesure.</p>
-                <div class="card-media">
-                    <video autoplay loop muted playsinline poster="https://via.placeholder.com/600x337/111111/86868b?text=Aperçu+Motion">
-                        <source src="projet-motion.mp4" type="video/mp4">
-                    </video>
-                </div>
-                <button class="card-btn" onclick="openGallery('motion')">Découvrir les créations &rsaquo;</button>
-            </div>
-        </div>
-
-        <section id="clients" style="max-width: 1200px; margin: 100px auto 40px auto; padding: 0 20px;">
-            <h2 class="section-title">Ils me font confiance.</h2>
-            <div class="grid-container">
-                <div class="client-card">
-                    <div>
-                        <div class="client-avatar">🎥</div>
-                        <h3>Créateurs YouTube</h3>
-                        <div class="client-role">Vlogs, Divertissement & Concepts</div>
-                    </div>
-                    <p>Storytelling fluide, rythme personnalisé et rétention maximale.</p>
-                    <button class="client-btn" onclick="openContactModal()">Découvrir les clients &rsaquo;</button>
-                </div>
-
-                <div class="client-card">
-                    <div>
-                        <div class="client-avatar">🚀</div>
-                        <h3>Entreprises & Marques</h3>
-                        <div class="client-role">Vidéos Promo & Réseaux Sociaux</div>
-                    </div>
-                    <p>Montages professionnels et habillage graphique moderne.</p>
-                    <button class="client-btn" onclick="openContactModal()">Découvrir les clients &rsaquo;</button>
-                </div>
-
-                <div class="client-card">
-                    <div>
-                        <div class="client-avatar">🤝</div>
-                        <h3>Associations</h3>
-                        <div class="client-role">Projets Événementiels</div>
-                    </div>
-                    <p>Vidéos impactantes, reportages engagés et présentations visuelles.</p>
-                    <button class="client-btn" onclick="openContactModal()">Découvrir les clients &rsaquo;</button>
-                </div>
-            </div>
-        </section>
-
-        <section class="specs-section" id="chiffres">
-            <h2 style="font-size: 36px; font-weight: 600; margin-bottom: 10px;">Conçu pour l'impact.</h2>
-            <div class="specs-grid">
-                <div class="spec-item">
-                    <h4>+25M</h4>
-                    <p>Vues cumulées sur les vidéos montées</p>
-                </div>
-                <div class="spec-item">
-                    <h4>4K</h4>
-                    <p>Étalonnage & Rendu ultra haute définition</p>
-                </div>
-                <div class="spec-item">
-                    <h4>100%</h4>
-                    <p>Projets livrés dans les temps</p>
-                </div>
-            </div>
-        </section>
+        <hr style="border-color: #334155; margin: 15px 0;">
+        <h3>Ajouter une nouvelle vidéo</h3>
+        <input type="text" id="v-title" placeholder="Titre de la vidéo">
+        <input type="text" id="v-link" placeholder="Lien (YouTube / TikTok / Drive)">
+        <input type="text" id="v-thumb" placeholder="Lien de l'image de miniature">
+        <button class="btn-primary" onclick="addVideo()">Publier sur le site</button>
+        <p id="admin-msg"></p>
     </div>
 
-    <!-- Page Galerie -->
-    <div id="gallery-page" class="gallery-page">
-        <button class="back-btn" onclick="showMainPage('#projets')">&lsaquo; Retour aux projets</button>
-        
-        <h1 id="gallery-title" style="font-size: 48px; font-weight: 600; margin-bottom: 8px;">Nos Créations</h1>
-        <p id="gallery-subtitle" style="color: var(--text-secondary); font-size: 18px; margin-bottom: 40px;">Découvrez mes réalisations récentes.</p>
+    <!-- 🎬 SECTION PRINCIPALE : LES VIDÉOS DU SITE -->
+    <main class="video-grid" id="videos-container">
+        <!-- Les vidéos s'afficheront ici automatiquement -->
+    </main>
 
-        <div class="gallery-grid" id="gallery-grid-content"></div>
-    </div>
-
-    <footer>
-        <div class="footer-content">
-            <p>Copyright © 2026 Sitoow Editing. Tous droits réservés.</p>
-            <p><a onclick="openContactModal()" style="color: var(--accent-blue); cursor: pointer;">Me contacter</a></p>
-        </div>
+    <!-- 🔒 PIED DE PAGE : BOUTON DISCRET POUR TE CONNECTER -->
+    <footer style="text-align: center; margin-top: 60px; padding: 20px;">
+        <button id="login-trigger-btn" onclick="openLoginModal()" style="background: transparent; border: none; color: #475569; cursor: pointer;">🔒 Connexion Admin</button>
     </footer>
 
-    <!-- Modal Contact -->
-    <div class="modal-overlay" id="contactModal" onclick="closeModalOnOuterClick(event, 'contactModal')">
-        <div class="modal-card">
-            <div class="toast" id="toastNotification">✓ Adresse e-mail copiée !</div>
-            <h3>Contacte Sitoow Editing</h3>
-            <p style="color: var(--text-secondary);">Discutons directement de ton projet :</p>
-            <div class="contact-box">
-                <div class="discord-tag">Discord : sitoow</div>
-                <button class="email-btn" onclick="copyEmail()">📋 Copier l'adresse mail (sito62114@gmail.com)</button>
-            </div>
-            <button class="close-btn" onclick="closeModal('contactModal')">Fermer</button>
+    <!-- FENÊTRE DE CONNEXION (MODALE) -->
+    <div id="login-modal">
+        <div class="modal-content">
+            <h3>Connexion Admin</h3>
+            <input type="email" id="email" placeholder="E-mail" style="width: 90%; padding: 8px; margin-bottom: 10px;">
+            <input type="password" id="password" placeholder="Mot de passe" style="width: 90%; padding: 8px; margin-bottom: 10px;">
+            <button class="btn-primary" onclick="login()" style="width: 100%;">Se connecter</button>
+            <button onclick="closeLoginModal()" style="width: 100%; margin-top: 5px; background: transparent; color: #94a3b8; border: none; cursor: pointer;">Annuler</button>
+            <p id="login-error" style="color: #ef4444; font-size: 14px; text-align: center;"></p>
         </div>
     </div>
 
+    <!-- ⚙️ SCRIPT LOGIQUE SUPABASE -->
     <script>
-        // =========================================================================
-        // 🎬 VOS VIDÉOS : C'est ici que vous ajoutez ou supprimez vos projets !
-        // =========================================================================
-        const myPortfolioData = {
-            'youtube': [
-                { 
-                    title: "Mon Vlog d'Aventure", 
-                    tag: "YouTube", 
-                    link: "https://youtube.com", 
-                    thumb: "https://via.placeholder.com/600x337/1c2541/ffffff?text=Vidéo+1" 
-                },
-                { 
-                    title: "Concept Défi 24H", 
-                    tag: "YouTube", 
-                    link: "https://youtube.com", 
-                    thumb: "https://via.placeholder.com/600x337/111111/ffffff?text=Vidéo+2" 
-                }
-            ],
-            'shorts': [
-                { 
-                    title: "Short Dynamic #1", 
-                    tag: "TikTok", 
-                    link: "https://tiktok.com", 
-                    thumb: "https://via.placeholder.com/600x337/1c2541/ffffff?text=Short+1" 
-                }
-            ],
-            'motion': [
-                { 
-                    title: "Showreel Motion Graphics", 
-                    tag: "Motion", 
-                    link: "#", 
-                    thumb: "https://via.placeholder.com/600x337/1c2541/ffffff?text=Motion+1" 
-                }
-            ]
-        };
+        // 1. Tes clés Supabase
+        const SUPABASE_URL = "https://TON_PROJET.supabase.co"; // Remplace par ton URL
+        const SUPABASE_KEY = "sb_publishable_oWotd3kAm3ub2oAl-tHDIw_QoZzPg3R"; // Ta clef publishable
 
-        // =========================================================================
-        // FONCTIONNEMENT DU SITE
-        // =========================================================================
-        function openGallery(categoryKey) {
-            const videos = myPortfolioData[categoryKey] || [];
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-            const titles = {
-                'youtube': "Vidéos YouTube & Vlogs",
-                'shorts': "Formats Courts & TikTok",
-                'motion': "Motion Design & VFX"
-            };
+        let isAdmin = false;
 
-            document.getElementById('gallery-title').innerText = titles[categoryKey];
-            const container = document.getElementById('gallery-grid-content');
-            container.innerHTML = "";
+        // 2. Vérifier la session au chargement
+        async function init() {
+            const { data } = await _supabase.auth.getSession();
+            if (data.session) {
+                setAdminMode(true);
+            }
+            loadVideos();
+        }
 
-            videos.forEach((item) => {
+        // Active ou désactive l'affichage de l'interface Admin
+        function setAdminMode(active) {
+            isAdmin = active;
+            const adminElements = document.querySelectorAll('.admin-only');
+            const loginBtn = document.getElementById('login-trigger-btn');
+            
+            adminElements.forEach(el => el.style.display = active ? 'block' : 'none');
+            
+            if (loginBtn) {
+                loginBtn.style.display = active ? 'none' : 'inline-block';
+            }
+            
+            // Met à jour l'affichage des boutons de suppression
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.style.display = active ? 'inline-block' : 'none';
+            });
+        }
+
+        // 3. Charger les vidéos depuis la base de données
+        async function loadVideos() {
+            const container = document.getElementById('videos-container');
+            container.innerHTML = '<p>Chargement des vidéos...</p>';
+
+            const { data: videos, error } = await _supabase.from('videos').select('*').order('created_at', { ascending: false });
+
+            if (error) {
+                container.innerHTML = '<p>Erreur lors du chargement des vidéos.</p>';
+                return;
+            }
+
+            if (videos.length === 0) {
+                container.innerHTML = '<p>Aucune vidéo publiée pour le moment.</p>';
+                return;
+            }
+
+            container.innerHTML = '';
+            videos.forEach(video => {
                 const card = document.createElement('div');
-                card.className = "video-item-card";
+                card.className = 'video-card';
                 card.innerHTML = `
-                    <div class="video-item-header">
-                        <span class="video-item-title">${item.title}</span>
-                        <span class="video-item-tag">${item.tag}</span>
+                    <img src="${video.thumb || 'https://via.placeholder.com/300x180'}" alt="${video.title}">
+                    <div class="video-card-content">
+                        <h3>${video.title}</h3>
+                        <a href="${video.link}" target="_blank">Voir la vidéo ↗</a>
+                        <br>
+                        <button class="btn-delete admin-only" style="display: ${isAdmin ? 'inline-block' : 'none'};" onclick="deleteVideo(${video.id})">🗑️ Supprimer</button>
                     </div>
-                    <a href="${item.link}" target="_blank" class="video-item-thumb">
-                        <img src="${item.thumb}" alt="${item.title}">
-                        <div class="play-overlay">
-                            <div class="play-icon">▶</div>
-                        </div>
-                    </a>
                 `;
                 container.appendChild(card);
             });
-
-            document.getElementById('main-page').style.display = "none";
-            document.getElementById('gallery-page').classList.add('active');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function showMainPage(targetAnchor = null) {
-            document.getElementById('gallery-page').classList.remove('active');
-            document.getElementById('main-page').style.display = "block";
-            if (targetAnchor) {
-                setTimeout(() => {
-                    const el = document.querySelector(targetAnchor);
-                    if (el) el.scrollIntoView({ behavior: 'smooth' });
-                }, 50);
+        // 4. Ajouter une vidéo
+        async function addVideo() {
+            const title = document.getElementById('v-title').value;
+            const link = document.getElementById('v-link').value;
+            const thumb = document.getElementById('v-thumb').value;
+            const msg = document.getElementById('admin-msg');
+
+            if (!title || !link) {
+                msg.style.color = '#ef4444';
+                msg.innerText = "Remplis au moins le titre et le lien !";
+                return;
+            }
+
+            const { error } = await _supabase.from('videos').insert([{ title, link, thumb }]);
+
+            if (error) {
+                msg.style.color = '#ef4444';
+                msg.innerText = "Erreur : " + error.message;
             } else {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                msg.style.color = '#22c55e';
+                msg.innerText = "✅ Vidéo ajoutée en direct !";
+                document.getElementById('v-title').value = '';
+                document.getElementById('v-link').value = '';
+                document.getElementById('v-thumb').value = '';
+                loadVideos(); // Rafraîchit les vidéos immédiatement
             }
         }
 
-        function openContactModal() { document.getElementById('contactModal').classList.add('active'); }
-        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-        function closeModalOnOuterClick(event, id) { if (event.target.id === id) closeModal(id); }
-
-        function copyEmail() {
-            navigator.clipboard.writeText("sito62114@gmail.com").then(() => {
-                const toast = document.getElementById('toastNotification');
-                toast.classList.add('show');
-                setTimeout(() => toast.classList.remove('show'), 2500);
-            });
+        // 5. Supprimer une vidéo
+        async function deleteVideo(id) {
+            if (confirm("Veux-tu vraiment supprimer cette vidéo ?")) {
+                await _supabase.from('videos').delete().eq('id', id);
+                loadVideos();
+            }
         }
+
+        // 6. Gestion de la connexion / déconnexion
+        async function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const err = document.getElementById('login-error');
+
+            const { error } = await _supabase.auth.signInWithPassword({ email, password });
+
+            if (error) {
+                err.innerText = "Identifiants incorrects";
+            } else {
+                closeLoginModal();
+                setAdminMode(true);
+                loadVideos();
+            }
+        }
+
+        async function logout() {
+            await _supabase.auth.signOut();
+            setAdminMode(false);
+            loadVideos();
+        }
+
+        function openLoginModal() { document.getElementById('login-modal').style.display = 'flex'; }
+        function closeLoginModal() { document.getElementById('login-modal').style.display = 'none'; }
+
+        // Lancement au chargement
+        init();
     </script>
 </body>
 </html>
