@@ -338,13 +338,16 @@
         </div>
     </footer>
 
-    <!-- Modal Connexion Admin -->
+    <!-- Modal Connexion Admin via Supabase Auth -->
     <div class="modal-overlay" id="loginModal" onclick="closeModalOnOuterClick(event, 'loginModal')">
         <div class="modal-card">
             <h3>Connexion Admin</h3>
-            <p style="color: var(--text-secondary); margin-bottom: 20px;">Saisissez votre mot de passe pour accéder au mode administration.</p>
-            <input type="password" id="adminPasswordInput" class="input-field" placeholder="Mot de passe admin">
-            <button class="email-btn" onclick="submitAdminLogin()">Se connecter</button>
+            <p style="color: var(--text-secondary); margin-bottom: 20px;">Connectez-vous avec vos identifiants Supabase.</p>
+            
+            <input type="email" id="adminEmailInput" class="input-field" placeholder="Adresse e-mail Supabase">
+            <input type="password" id="adminPasswordInput" class="input-field" placeholder="Mot de passe">
+            
+            <button id="loginSubmitBtn" class="email-btn" onclick="submitAdminLogin()">Se connecter</button>
             <br><br>
             <button class="close-btn" onclick="closeModal('loginModal')">Annuler</button>
         </div>
@@ -384,32 +387,38 @@
         // ⚡ CONFIGURATION SUPABASE
         // =========================================================================
         // REMPLACE PAR TES PROPRES CLÉS OBTENUES SUR SUPABASE (Dashboard > Project Settings > API)
-        const SUPABASE_URL = 'https://kiarcshzgolzncdidnpj.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_oWotd3kAm3ub2oAl-tHDIw_QoZzPg3R';
+        const SUPABASE_URL = 'https://TON-PROJET.supabase.co';
+        const SUPABASE_ANON_KEY = 'TA-CLE-ANON-PUBLIQUE';
 
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // =========================================================================
-        // 🔑 CONFIGURATION ADMIN
+        // 🔒 GESTION DU MODE ADMIN VIA SUPABASE AUTH
         // =========================================================================
-        const ADMIN_PASSWORD = "admin123"; // <-- Ton mot de passe de connexion site
         let isAdminLoggedIn = false;
         let currentActiveCategory = 'youtube';
 
-        // =========================================================================
-        // 🔒 GESTION DU MODE ADMIN & INITIALISATION
-        // =========================================================================
-        window.addEventListener('DOMContentLoaded', () => {
-            // Vérifier la session active
-            if (localStorage.getItem('sitoow_admin_session') === 'true') {
+        window.addEventListener('DOMContentLoaded', async () => {
+            // 1. Vérifier si une session Supabase active existe au chargement de la page
+            const { data: { session } } = await _supabase.auth.getSession();
+            if (session) {
                 setAdminMode(true);
             }
 
-            // Détection automatique du hash #admin dans l'URL
+            // 2. Détection automatique du hash #admin dans l'URL
             if (window.location.hash === '#admin') {
                 if (!isAdminLoggedIn) {
                     openModal('loginModal');
                 }
+            }
+        });
+
+        // Écouter les changements d'état d'authentification Supabase (Connexion / Déconnexion)
+        _supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN' && session) {
+                setAdminMode(true);
+            } else if (event === 'SIGNED_OUT') {
+                setAdminMode(false);
             }
         });
 
@@ -419,26 +428,46 @@
             }
         });
 
-        function toggleAdminLogin() {
+        // Bouton Admin dans la barre de navigation
+        async function toggleAdminLogin() {
             if (isAdminLoggedIn) {
-                setAdminMode(false);
-                localStorage.removeItem('sitoow_admin_session');
+                await _supabase.auth.signOut();
                 alert("Vous êtes déconnecté du Mode Admin.");
             } else {
                 openModal('loginModal');
             }
         }
 
-        function submitAdminLogin() {
-            const inputPwd = document.getElementById('adminPasswordInput').value;
-            if (inputPwd === ADMIN_PASSWORD) {
-                localStorage.setItem('sitoow_admin_session', 'true');
-                setAdminMode(true);
+        // Connexion réelle auprès de Supabase
+        async function submitAdminLogin() {
+            const email = document.getElementById('adminEmailInput').value.trim();
+            const password = document.getElementById('adminPasswordInput').value;
+
+            if (!email || !password) {
+                alert("Veuillez remplir tous les champs.");
+                return;
+            }
+
+            const btn = document.getElementById('loginSubmitBtn');
+            btn.innerText = "Connexion...";
+            btn.disabled = true;
+
+            // Tentative de connexion via Supabase Auth
+            const { data, error } = await _supabase.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
+
+            btn.innerText = "Se connecter";
+            btn.disabled = false;
+
+            if (error) {
+                alert("Erreur de connexion : " + error.message);
+            } else {
                 closeModal('loginModal');
+                document.getElementById('adminEmailInput').value = "";
                 document.getElementById('adminPasswordInput').value = "";
                 showMainPage();
-            } else {
-                alert("Mot de passe incorrect.");
             }
         }
 
@@ -449,12 +478,12 @@
             const addVideoBtn = document.getElementById('addVideoBtn');
 
             if (status) {
-                badge.classList.add('active');
-                authBtn.innerText = "Déconnexion";
+                if (badge) badge.classList.add('active');
+                if (authBtn) authBtn.innerText = "Déconnexion";
                 if (addVideoBtn) addVideoBtn.classList.add('admin-visible');
             } else {
-                badge.classList.remove('active');
-                authBtn.innerText = "Admin";
+                if (badge) badge.classList.remove('active');
+                if (authBtn) authBtn.innerText = "Admin";
                 if (addVideoBtn) addVideoBtn.classList.remove('admin-visible');
             }
         }
