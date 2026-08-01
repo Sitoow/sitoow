@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sitoow Editing — Monteur Vidéo</title>
+    <style>
+        :root {
+            --bg-color: #000000;
+            --card-bg: #161617;
+            --text-primary: #f5f5f7;
+            --text-secondary: #86868b;
+            --accent-blue: #0071e3;
+            --accent-blue-hover: #0077ed;
+            --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        /* Navigation Style Apple */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 44px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-content {
+            width: 100%;
+            max-width: 980px;
+            padding: 0 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-size: 19px;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 12px;
+            transition: color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        /* Announcement Ribbon */
+        .ribbon {
+            margin-top: 44px;
+            background-color: #1d1d1f;
+            text-align: center;
+            padding: 12px 20px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .ribbon button {
+            background: none;
+            border: none;
+            color: var(--accent-blue);
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            font-family: inherit;
+        }
+
+        .ribbon button:hover {
+            text-decoration: underline;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 80px 20px 60px 20px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at 50% 30%, #1c2541 0%, #000000 70%);
+        }
+
+        .hero-tag {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--accent-blue);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hero h1 {
+            font-size: 56px;
+            line-height: 1.07143;
+            font-weight: 600;
+            letter-spacing: -0.005em;
+            margin-bottom: 12px;
+        }
+
+        .hero h2 {
+            font-size: 28px;
+            line-height: 1.14286;
+            font-weight: 400;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            max-width: 600px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-blue);
+            color: #ffffff;
+            padding: 11px 21px;
+            border-radius: 980px;
+            font-size: 17px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-blue-hover);
+        }
+
+        .btn-secondary {
+            color: var(--accent-blue);
+            font-size: 17px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-family: inherit;
+        }
+
+        .btn-secondary:hover {
+            text-decoration: underline;
+        }
+
+        /* Video Showcase Banner */
+        .hero-showcase {
+            width: 100%;
+            max-width: 1000px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            background: #111;
+        }
+
+        .hero-showcase video {
+            width: 100%;
+            display: block;
+        }
+
+        /* Section Layout Grid */
+        .section-title {
+            text-align: center;
+            font-size: 40px;
+            font-weight: 600;
+            margin: 80px 0 40px 0;
+            letter-spacing: -0.003em;
+        }
+
+        .grid-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        /* OPTIMISATION ALIGNEMENT DES CARTES */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 24px;
+            padding: 36px 28px 28px 28px;
+            display: grid;
+            /* 4 Lignes fixes : Titre, Description, Média, Bouton */
+            grid-template-rows: auto 1fr auto auto;
+            gap: 16px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .card:hover {
+            transform: scale(1.02);
+        }
+
+        .card-header h3 {
+            font-size: 26px;
+            font-weight: 600;
+            margin: 0;
+            min-height: 2.4em; /* Aligne la hauteur des titres sur 2 lignes max */
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .card-header p {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+
+        .card-media {
+            width: 100%;
+            height: 200px; /* Hauteur uniforme pour tous les aperçus */
+            border-radius: 14px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .card-media video, .card-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .card-btn {
+            background-color: rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+            padding: 12px 18px;
+            border-radius: 980px;
+            font-size: 14px;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            width: 100%;
+            font-family: inherit;
+        }
+
+        .card-btn:hover {
+            background-color: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: #ffffff;
+        }
+
+        /* Section Clients */
+        .client-card {
+            background-color: var(--card-bg);
+            border-radius: 24px;
+            padding: 32px 24px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .client-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .client-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            margin: 0 auto 12px auto;
+            background: linear-gradient(135deg, #2c2c2e, #3a3a3c);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .client-card h3 {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .client-card .client-role {
+            font-size: 14px;
+            color: var(--accent-blue);
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .client-card p {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        .client-btn {
+            background-color: rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+            padding: 10px 18px;
+            border-radius: 980px;
+            font-size: 14px;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-family: inherit;
+            width: 100%;
+        }
+
+        .client-btn:hover {
+            background-color: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: #ffffff;
+        }
+
+        /* Stats / Specs Section */
+        .specs-section {
+            background-color: #161617;
+            margin: 80px 0;
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        .specs-grid {
+            max-width: 1000px;
+            margin: 40px auto 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+
+        .spec-item h4 {
+            font-size: 48px;
+            font-weight: 700;
+            background: linear-gradient(180deg, #fff 0%, #86868b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .spec-item p {
+            font-size: 15px;
+            color: var(--text-secondary);
+        }
+
+        /* Pop-up / Modal Contact & Discord */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            z-index: 10000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-card {
+            background: #1d1d1f;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 440px;
+            width: 90%;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: scale(1);
+        }
+
+        .modal-card h3 {
+            font-size: 26px;
+            margin-bottom: 12px;
+        }
+
+        .contact-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .discord-tag {
+            background: #5865F2;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 20px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 16px;
+            letter-spacing: 0.5px;
+        }
+
+        .email-btn {
+            background: var(--accent-blue);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.1s ease;
+            width: 100%;
+            justify-content: center;
+            margin-top: 8px;
+            font-family: inherit;
+        }
+
+        .email-btn:hover {
+            background: var(--accent-blue-hover);
+        }
+
+        .email-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Toast notification Copié */
+        .toast {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-10px);
+            background: #34c759;
+            color: #ffffff;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .modal-card .response-time {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        .close-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            border: none;
+            padding: 10px 24px;
+            border-radius: 980px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Footer */
+        footer {
+            background-color: #111113;
+            padding: 40px 20px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-content {
+            max-width: 980px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 40px; }
+            .hero h2 { font-size: 20px; }
+            .specs-grid { grid-template-columns: 1fr; gap: 24px; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Barre de Navigation -->
+    <nav>
+        <div class="nav-content">
+            <a href="#" class="nav-logo">Sitoow Editing</a>
+            <ul class="nav-links">
+                <li><a href="#projets">Projets</a></li>
+                <li><a href="#clients">Clients</a></li>
+                <li><a href="#chiffres">Chiffres</a></li>
+                <li><a onclick="openContactModal()">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Bandeau annonce -->
+    <div class="ribbon">
+        Disponible pour de nouveaux projets de montage vidéo. <button onclick="openContactModal()">Me contacter &rsaquo;</button>
+    </div>
+
+    <!-- Section Hero -->
+    <section class="hero">
+        <span class="hero-tag">Sitoow Editing</span>
+        <h1>Montage Vidéo.</h1>
+        <h2>Repensé avec précision, rythme et émotion.</h2>
+        <div class="cta-buttons">
+            <a href="#projets" class="btn-primary">Voir les créations</a>
+            <button class="btn-secondary" onclick="openContactModal()">Me contacter &rsaquo;</button>
+        </div>
+        
+        <div class="hero-showcase">
+            <video autoplay loop muted playsinline poster="https://via.placeholder.com/1200x675/000000/ffffff?text=Remplacez+par+votre+Showreel.mp4">
+                <source src="votre-showreel.mp4" type="video/mp4">
+            </video>
+        </div>
+    </section>
+
+    <!-- Section Projets Grid -->
+    <h2 class="section-title" id="projets">Dernières Réalisations.</h2>
+    <div class="grid-container">
+
+        <!-- Carte 1 : Vidéos YouTube -->
+        <div class="card">
+            <div class="card-header">
+                <h3>Vidéos YouTube & Vlogs</h3>
+            </div>
+            <p class="service-description">Rythme dynamique, narration engageante et sound design immersif optimisés pour la rétention sur YouTube.</p>
+            <div class="card-media">
+                <video autoplay loop muted playsinline poster="https://via.placeholder.com/600x337/111111/86868b?text=Insérer+Vidéo+YouTube+(mp4)">
+                    <source src="projet-youtube.mp4" type="video/mp4">
+                </video>
+            </div>
+            <button class="card-btn" onclick="openContactModal()">Découvrir les créations &rsaquo;</button>
+        </div>
+
+        <!-- Carte 2 : Formats Courts -->
+        <div class="card">
+            <div class="card-header">
+                <h3>Formats Courts & TikTok / Reels</h3>
+            </div>
+            <p class="service-description">Format vertical 9:16 optimisé avec sous-titres animés et effets visuels accrocheurs dès la 1ère seconde.</p>
+            <div class="card-media">
+                <video autoplay loop muted playsinline poster="https://via.placeholder.com/600x337/111111/86868b?text=Insérer+Vidéo+Short/TikTok">
+                    <source src="projet-short.mp4" type="video/mp4">
+                </video>
+            </div>
+            <button class="card-btn" onclick="openContactModal()">Découvrir les créations &rsaquo;</button>
+        </div>
+
+        <!-- Carte 3 : Motion Design -->
+        <div class="card">
+            <div class="card-header">
+                <h3>Motion Design</h3>
+            </div>
+            <p class="service-description">Animations graphiques, étalonnage de couleur haut de gamme et habillage visuel sur mesure.</p>
+            <div class="card-media">
+                <video autoplay loop muted playsinline poster="https://via.placeholder.com/600x337/111111/86868b?text=Insérer+Vidéo+Motion+Design">
+                    <source src="projet-motion.mp4" type="video/mp4">
+                </video>
+            </div>
+            <button class="card-btn" onclick="openContactModal()">Découvrir les créations &rsaquo;</button>
+        </div>
+
+    </div>
+
+    <!-- Section Clients -->
+    <section id="clients" style="max-width: 1200px; margin: 100px auto 40px auto; padding: 0 20px;">
+        <h2 class="section-title">Ils me font confiance.</h2>
+        <p style="text-align: center; color: var(--text-secondary); font-size: 20px; margin-bottom: 50px;">Créateurs, marques et organisations qui collaborent avec Sitoow Editing :</p>
+        
+        <div class="grid-container">
+            <!-- Carte 1: Créateurs YouTube -->
+            <div class="client-card">
+                <div>
+                    <div class="client-avatar">🎥</div>
+                    <h3>Créateurs YouTube</h3>
+                    <div class="client-role">Vlogs, Divertissement & Concepts</div>
+                </div>
+                <p>Storytelling fluide, rythme personnalisé et rétention maximale pour développer la communauté et l'engagement.</p>
+                <button class="client-btn" onclick="openContactModal()">Découvrir les clients &rsaquo;</button>
+            </div>
+
+            <!-- Carte 2: Entreprises & Marques -->
+            <div class="client-card">
+                <div>
+                    <div class="client-avatar">🚀</div>
+                    <h3>Entreprises & Marques</h3>
+                    <div class="client-role">Vidéos Promo & Réseaux Sociaux</div>
+                </div>
+                <p>Montages professionnels, habillage graphique moderne et formats courts optimisés pour capter de nouveaux clients.</p>
+                <button class="client-btn" onclick="openContactModal()">Découvrir les clients &rsaquo;</button>
+            </div>
+
+            <!-- Carte 3: Associations -->
+            <div class="client-card">
+                <div>
+                    <div class="client-avatar">🤝</div>
+                    <h3>Associations</h3>
+                    <div class="client-role">Projets Événementiels & Institutionnels</div>
+                </div>
+                <p>Vidéos impactantes, reportages engagés et présentations visuelles pour promouvoir vos projets et mobiliser votre public.</p>
+                <button class="client-btn" onclick="openContactModal()">Découvrir les clients &rsaquo;</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Chiffres / Specs -->
+    <section class="specs-section" id="chiffres">
+        <h2 style="font-size: 36px; font-weight: 600; margin-bottom: 10px;">Conçu pour l'impact.</h2>
+        <p style="color: var(--text-secondary); font-size: 19px;">Une expertise au service de vos vues et de votre image de marque.</p>
+        
+        <div class="specs-grid">
+            <div class="spec-item">
+                <h4>+50M</h4>
+                <p>Vues cumulées sur les vidéos montées</p>
+            </div>
+            <div class="spec-item">
+                <h4>4K</h4>
+                <p>Étalonnage & Rendu ultra haute définition</p>
+            </div>
+            <div class="spec-item">
+                <h4>100%</h4>
+                <p>Projets livrés dans les temps</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <p>Copyright © 2026 Sitoow Editing. Tous droits réservés.</p>
+            <p><a onclick="openContactModal()" style="color: var(--accent-blue); cursor: pointer;">Me contacter</a></p>
+        </div>
+    </footer>
+
+    <!-- Modal Pop-up Contact / Discord / Email -->
+    <div class="modal-overlay" id="contactModal" onclick="closeModalOnOuterClick(event)">
+        <div class="modal-card">
+            <!-- Toast de notification lors de la copie -->
+            <div class="toast" id="toastNotification">✓ Adresse e-mail copiée !</div>
+
+            <h3>Contacte Sitoow Editing</h3>
+            <p style="color: var(--text-secondary);">Discutons directement de ton projet :</p>
+            
+            <div class="contact-box">
+                <div class="discord-tag">Discord : sitoow</div>
+                <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 12px;">ou clique ci-dessous pour copier mon adresse mail :</p>
+                <button class="email-btn" onclick="copyEmail()">
+                    📋 Copier l'adresse mail (sito62114@gmail.com)
+                </button>
+            </div>
+
+            <p class="response-time">⚡ Réponse en moins de 24h</p>
+            <button class="close-btn" onclick="closeContactModal()">Fermer</button>
+        </div>
+    </div>
+
+    <script>
+        function openContactModal() {
+            const modal = document.getElementById('contactModal');
+            modal.classList.add('active');
+        }
+
+        function closeContactModal() {
+            const modal = document.getElementById('contactModal');
+            modal.classList.remove('active');
+        }
+
+        function closeModalOnOuterClick(event) {
+            if (event.target.id === 'contactModal') {
+                closeContactModal();
+            }
+        }
+
+        function copyEmail() {
+            const email = "sito62114@gmail.com";
+            navigator.clipboard.writeText(email).then(() => {
+                const toast = document.getElementById('toastNotification');
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2500);
+            }).catch(err => {
+                const tempInput = document.createElement("input");
+                tempInput.value = email;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand("copy");
+                document.body.removeChild(tempInput);
+
+                const toast = document.getElementById('toastNotification');
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2500);
+            });
+        }
+    </script>
+
+</body>
+</html>
