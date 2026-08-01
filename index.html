@@ -15,699 +15,245 @@
             --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        body {
-            font-family: var(--font-family);
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            overflow-x: hidden;
-        }
+        html { scroll-behavior: smooth; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        body { font-family: var(--font-family); background-color: var(--bg-color); color: var(--text-primary); overflow-x: hidden; }
 
         /* Navigation Style Apple */
         nav {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            height: 44px;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            z-index: 999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            position: fixed; top: 0; width: 100%; height: 44px;
+            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            z-index: 999; display: flex; justify-content: center; align-items: center;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
+        .nav-content { width: 100%; max-width: 980px; padding: 0 22px; display: flex; justify-content: space-between; align-items: center; }
+        .nav-logo { font-size: 19px; font-weight: 600; color: var(--text-primary); text-decoration: none; cursor: pointer; }
+        .nav-links { display: flex; gap: 32px; list-style: none; align-items: center; }
+        .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 12px; transition: color 0.3s ease; cursor: pointer; }
+        .nav-links a:hover { color: var(--text-primary); }
 
-        .nav-content {
-            width: 100%;
-            max-width: 980px;
-            padding: 0 22px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .nav-logo {
-            font-size: 19px;
-            font-weight: 600;
-            color: var(--text-primary);
-            text-decoration: none;
-            letter-spacing: -0.5px;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 32px;
-            list-style: none;
-        }
-
-        .nav-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 12px;
-            transition: color 0.3s ease;
-            cursor: pointer;
-        }
-
-        .nav-links a:hover {
-            color: var(--text-primary);
-        }
-
-        /* Announcement Ribbon */
-        .ribbon {
-            margin-top: 44px;
-            background-color: #1d1d1f;
-            text-align: center;
-            padding: 12px 20px;
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-
-        .ribbon button {
-            background: none;
-            border: none;
-            color: var(--accent-blue);
-            font-size: 14px;
-            cursor: pointer;
-            text-decoration: none;
-            font-family: inherit;
-        }
-
-        .ribbon button:hover {
-            text-decoration: underline;
-        }
+        .ribbon { margin-top: 44px; background-color: #1d1d1f; text-align: center; padding: 12px 20px; font-size: 14px; color: var(--text-secondary); }
+        .ribbon button { background: none; border: none; color: var(--accent-blue); font-size: 14px; cursor: pointer; font-family: inherit; }
+        .ribbon button:hover { text-decoration: underline; }
 
         /* Hero Section */
-        .hero {
-            padding: 80px 20px 60px 20px;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: radial-gradient(circle at 50% 30%, #1c2541 0%, #000000 70%);
-        }
+        .hero { padding: 80px 20px 60px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(circle at 50% 30%, #1c2541 0%, #000000 70%); }
+        .hero-tag { font-size: 17px; font-weight: 600; color: var(--accent-blue); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .hero h1 { font-size: 56px; line-height: 1.07143; font-weight: 600; margin-bottom: 12px; }
+        .hero h2 { font-size: 28px; font-weight: 400; color: var(--text-secondary); margin-bottom: 24px; max-width: 600px; }
+        .cta-buttons { display: flex; gap: 16px; align-items: center; margin-bottom: 40px; }
+        .btn-primary { background-color: var(--accent-blue); color: #ffffff; padding: 11px 21px; border-radius: 980px; font-size: 17px; text-decoration: none; transition: all 0.3s ease; border: none; cursor: pointer; }
+        .btn-primary:hover { background-color: var(--accent-blue-hover); }
+        .btn-secondary { color: var(--accent-blue); font-size: 17px; background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 4px; font-family: inherit; }
+        .btn-secondary:hover { text-decoration: underline; }
 
-        .hero-tag {
-            font-size: 17px;
-            font-weight: 600;
-            color: var(--accent-blue);
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+        .hero-showcase { width: 100%; max-width: 1000px; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); background: #111; }
+        .hero-showcase video { width: 100%; display: block; }
 
-        .hero h1 {
-            font-size: 56px;
-            line-height: 1.07143;
-            font-weight: 600;
-            letter-spacing: -0.005em;
-            margin-bottom: 12px;
-        }
+        .section-title { text-align: center; font-size: 40px; font-weight: 600; margin: 80px 0 40px 0; scroll-margin-top: 60px; }
+        #clients, #chiffres { scroll-margin-top: 60px; }
 
-        .hero h2 {
-            font-size: 28px;
-            line-height: 1.14286;
-            font-weight: 400;
-            color: var(--text-secondary);
-            margin-bottom: 24px;
-            max-width: 600px;
-        }
+        .grid-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .card { background-color: var(--card-bg); border-radius: 24px; padding: 36px 28px 28px 28px; display: grid; grid-template-rows: auto 1fr auto auto; gap: 16px; border: 1px solid rgba(255, 255, 255, 0.05); transition: transform 0.4s ease; }
+        .card:hover { transform: scale(1.02); }
+        .card-title { font-size: 26px; font-weight: 600; margin: 0; min-height: 2.4em; }
+        .card-description { font-size: 15px; color: var(--text-secondary); line-height: 1.4; margin: 0; }
+        .card-media { width: 100%; height: 200px; border-radius: 14px; overflow: hidden; background: #000; }
+        .card-media video, .card-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .card-btn { background-color: rgba(255, 255, 255, 0.08); color: var(--text-primary); padding: 12px 18px; border-radius: 980px; font-size: 14px; font-weight: 500; border: 1px solid rgba(255, 255, 255, 0.12); cursor: pointer; transition: all 0.2s ease; width: 100%; font-family: inherit; }
+        .card-btn:hover { background-color: var(--accent-blue); border-color: var(--accent-blue); color: #ffffff; }
 
-        .cta-buttons {
-            display: flex;
-            gap: 16px;
-            align-items: center;
-            margin-bottom: 40px;
-        }
+        .client-card { background-color: var(--card-bg); border-radius: 24px; padding: 32px 24px; border: 1px solid rgba(255, 255, 255, 0.05); text-align: center; transition: transform 0.3s ease; display: grid; grid-template-rows: auto 1fr auto; gap: 16px; }
+        .client-card:hover { transform: translateY(-5px); }
+        .client-avatar { width: 70px; height: 70px; border-radius: 50%; margin: 0 auto 12px auto; background: linear-gradient(135deg, #2c2c2e, #3a3a3c); display: flex; align-items: center; justify-content: center; font-size: 28px; }
+        .client-card h3 { font-size: 22px; font-weight: 600; }
+        .client-card .client-role { font-size: 14px; color: var(--accent-blue); margin-bottom: 12px; }
+        .client-card p { font-size: 15px; color: var(--text-secondary); line-height: 1.4; }
+        .client-btn { background-color: rgba(255, 255, 255, 0.08); color: var(--text-primary); padding: 10px 18px; border-radius: 980px; font-size: 14px; border: 1px solid rgba(255, 255, 255, 0.12); cursor: pointer; width: 100%; font-family: inherit; }
+        .client-btn:hover { background-color: var(--accent-blue); color: #fff; }
 
-        .btn-primary {
-            background-color: var(--accent-blue);
-            color: #ffffff;
-            padding: 11px 21px;
-            border-radius: 980px;
-            font-size: 17px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            border: none;
-            cursor: pointer;
-        }
+        .specs-section { background-color: #161617; margin: 80px 0; padding: 80px 20px; text-align: center; }
+        .specs-grid { max-width: 1000px; margin: 40px auto 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+        .spec-item h4 { font-size: 48px; font-weight: 700; background: linear-gradient(180deg, #fff 0%, #86868b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .spec-item p { font-size: 15px; color: var(--text-secondary); }
 
-        .btn-primary:hover {
-            background-color: var(--accent-blue-hover);
-        }
+        /* GALERIE ET CRÉATIONS */
+        .gallery-page { display: none; padding-top: 80px; padding-bottom: 100px; min-height: 100vh; max-width: 1200px; margin: 0 auto; padding-left: 20px; padding-right: 20px; }
+        .gallery-page.active { display: block; }
+        .back-btn { background: rgba(255, 255, 255, 0.08); color: var(--text-primary); border: 1px solid rgba(255, 255, 255, 0.1); padding: 10px 20px; border-radius: 980px; font-size: 14px; cursor: pointer; transition: all 0.2s ease; margin-bottom: 30px; }
+        .back-btn:hover { background: rgba(255, 255, 255, 0.2); }
 
-        .btn-secondary {
-            color: var(--accent-blue);
-            font-size: 17px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-family: inherit;
-        }
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 28px; margin-top: 40px; }
+        .video-item-card { background: var(--card-bg); border-radius: 18px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.08); transition: transform 0.3s ease; display: flex; flex-direction: column; position: relative; }
+        .video-item-card:hover { transform: translateY(-6px); border-color: rgba(255, 255, 255, 0.25); }
 
-        .btn-secondary:hover {
-            text-decoration: underline;
-        }
+        .video-item-header { padding: 16px 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: space-between; align-items: center; }
+        .video-item-title { font-size: 16px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .video-item-tag { font-size: 12px; color: var(--accent-blue); background: rgba(0, 113, 227, 0.15); padding: 4px 10px; border-radius: 20px; }
 
-        /* Video Showcase Banner */
-        .hero-showcase {
-            width: 100%;
-            max-width: 1000px;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            position: relative;
-            background: #111;
-        }
+        .video-item-thumb { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; cursor: pointer; text-decoration: none; display: block; overflow: hidden; }
+        .video-item-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+        .video-item-card:hover .video-item-thumb img { transform: scale(1.05); }
 
-        .hero-showcase video {
-            width: 100%;
-            display: block;
-        }
+        .play-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); display: flex; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; }
+        .play-icon { width: 50px; height: 50px; background: var(--accent-blue); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #fff; font-size: 20px; }
+        .video-item-thumb:hover .play-overlay { opacity: 1; }
 
-        /* Section Layout Grid */
-        .section-title {
-            text-align: center;
-            font-size: 40px;
-            font-weight: 600;
-            margin: 80px 0 40px 0;
-            letter-spacing: -0.003em;
-        }
+        /* MODALE CONTACT */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 10000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: all 0.35s ease; }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal-card { background: #1d1d1f; border-radius: 20px; padding: 40px; max-width: 440px; width: 90%; text-align: center; border: 1px solid rgba(255, 255, 255, 0.1); transform: scale(0.85); transition: transform 0.35s ease; }
+        .modal-overlay.active .modal-card { transform: scale(1); }
+        .modal-card h3 { font-size: 26px; margin-bottom: 12px; }
 
-        .grid-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
+        .contact-box { background: rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 20px; margin: 20px 0; border: 1px solid rgba(255, 255, 255, 0.08); }
+        .discord-tag { background: #5865F2; color: #fff; padding: 12px 20px; border-radius: 12px; font-size: 20px; font-weight: 600; display: inline-block; margin-bottom: 16px; }
+        .email-btn { background: var(--accent-blue); color: #fff; padding: 12px 20px; border-radius: 12px; font-size: 15px; font-weight: 500; border: none; cursor: pointer; width: 100%; font-family: inherit; }
+        .close-btn { background: rgba(255, 255, 255, 0.1); color: var(--text-primary); border: none; padding: 10px 24px; border-radius: 980px; font-size: 15px; cursor: pointer; }
 
-        /* OPTIMISATION ALIGNEMENT DES CARTES */
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 24px;
-            padding: 36px 28px 28px 28px;
-            display: grid;
-            /* 4 Lignes fixes : Titre, Description, Média, Bouton */
-            grid-template-rows: auto 1fr auto auto;
-            gap: 16px;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
+        footer { background-color: #111113; padding: 40px 20px; font-size: 12px; color: var(--text-secondary); border-top: 1px solid rgba(255, 255, 255, 0.1); }
+        .footer-content { max-width: 980px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
 
-        .card:hover {
-            transform: scale(1.02);
-        }
-
-        .card-header h3 {
-            font-size: 26px;
-            font-weight: 600;
-            margin: 0;
-            min-height: 2.4em; /* Aligne la hauteur des titres sur 2 lignes max */
-            display: flex;
-            align-items: flex-start;
-        }
-
-        .card-header p {
-            font-size: 15px;
-            color: var(--text-secondary);
-            margin-top: 8px;
-            line-height: 1.4;
-        }
-
-        .card-media {
-            width: 100%;
-            height: 200px; /* Hauteur uniforme pour tous les aperçus */
-            border-radius: 14px;
-            overflow: hidden;
-            background: #000;
-        }
-
-        .card-media video, .card-media img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-
-        .card-btn {
-            background-color: rgba(255, 255, 255, 0.08);
-            color: var(--text-primary);
-            padding: 12px 18px;
-            border-radius: 980px;
-            font-size: 14px;
-            font-weight: 500;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            width: 100%;
-            font-family: inherit;
-        }
-
-        .card-btn:hover {
-            background-color: var(--accent-blue);
-            border-color: var(--accent-blue);
-            color: #ffffff;
-        }
-
-        /* Section Clients */
-        .client-card {
-            background-color: var(--card-bg);
-            border-radius: 24px;
-            padding: 32px 24px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            text-align: center;
-            transition: transform 0.3s ease, border-color 0.3s ease;
-            display: grid;
-            grid-template-rows: auto 1fr auto;
-            gap: 16px;
-            align-items: center;
-        }
-
-        .client-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .client-avatar {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            margin: 0 auto 12px auto;
-            background: linear-gradient(135deg, #2c2c2e, #3a3a3c);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .client-card h3 {
-            font-size: 22px;
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-
-        .client-card .client-role {
-            font-size: 14px;
-            color: var(--accent-blue);
-            margin-bottom: 12px;
-            font-weight: 500;
-        }
-
-        .client-card p {
-            font-size: 15px;
-            color: var(--text-secondary);
-            line-height: 1.4;
-            margin: 0;
-        }
-
-        .client-btn {
-            background-color: rgba(255, 255, 255, 0.08);
-            color: var(--text-primary);
-            padding: 10px 18px;
-            border-radius: 980px;
-            font-size: 14px;
-            font-weight: 500;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            font-family: inherit;
-            width: 100%;
-        }
-
-        .client-btn:hover {
-            background-color: var(--accent-blue);
-            border-color: var(--accent-blue);
-            color: #ffffff;
-        }
-
-        /* Stats / Specs Section */
-        .specs-section {
-            background-color: #161617;
-            margin: 80px 0;
-            padding: 80px 20px;
-            text-align: center;
-        }
-
-        .specs-grid {
-            max-width: 1000px;
-            margin: 40px auto 0 auto;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 40px;
-        }
-
-        .spec-item h4 {
-            font-size: 48px;
-            font-weight: 700;
-            background: linear-gradient(180deg, #fff 0%, #86868b 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 8px;
-        }
-
-        .spec-item p {
-            font-size: 15px;
-            color: var(--text-secondary);
-        }
-
-        /* Pop-up / Modal Contact & Discord */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            z-index: 10000;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-            opacity: 1;
-        }
-
-        .modal-card {
-            background: #1d1d1f;
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 440px;
-            width: 90%;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
-            transform: scale(0.9);
-            transition: transform 0.3s ease;
-            position: relative;
-        }
-
-        .modal-overlay.active .modal-card {
-            transform: scale(1);
-        }
-
-        .modal-card h3 {
-            font-size: 26px;
-            margin-bottom: 12px;
-        }
-
-        .contact-box {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
-            padding: 20px;
-            margin: 20px 0;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .discord-tag {
-            background: #5865F2;
-            color: #fff;
-            padding: 12px 20px;
-            border-radius: 12px;
-            font-size: 20px;
-            font-weight: 600;
-            display: inline-block;
-            margin-bottom: 16px;
-            letter-spacing: 0.5px;
-        }
-
-        .email-btn {
-            background: var(--accent-blue);
-            color: #fff;
-            padding: 12px 20px;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            border: none;
-            cursor: pointer;
-            transition: background 0.2s ease, transform 0.1s ease;
-            width: 100%;
-            justify-content: center;
-            margin-top: 8px;
-            font-family: inherit;
-        }
-
-        .email-btn:hover {
-            background: var(--accent-blue-hover);
-        }
-
-        .email-btn:active {
-            transform: scale(0.98);
-        }
-
-        /* Toast notification Copié */
-        .toast {
-            position: absolute;
-            top: 15px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-10px);
-            background: #34c759;
-            color: #ffffff;
-            padding: 8px 18px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
-
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        .modal-card .response-time {
-            color: var(--text-secondary);
-            font-size: 14px;
-            margin-bottom: 24px;
-        }
-
-        .close-btn {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-primary);
-            border: none;
-            padding: 10px 24px;
-            border-radius: 980px;
-            font-size: 15px;
-            cursor: pointer;
-            transition: background 0.2s ease;
-        }
-
-        .close-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        /* Footer */
-        footer {
-            background-color: #111113;
-            padding: 40px 20px;
-            font-size: 12px;
-            color: var(--text-secondary);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .footer-content {
-            max-width: 980px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 40px; }
-            .hero h2 { font-size: 20px; }
-            .specs-grid { grid-template-columns: 1fr; gap: 24px; }
-            .nav-links { display: none; }
-        }
+        .toast { position: absolute; top: 15px; left: 50%; transform: translateX(-50%) translateY(-10px); background: #34c759; color: #ffffff; padding: 8px 18px; border-radius: 20px; font-size: 13px; font-weight: 600; opacity: 0; pointer-events: none; transition: all 0.3s ease; }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
     </style>
 </head>
 <body>
 
-    <!-- Barre de Navigation -->
+    <!-- Navigation -->
     <nav>
         <div class="nav-content">
-            <a href="#" class="nav-logo">Sitoow Editing</a>
+            <a onclick="showMainPage()" class="nav-logo">Sitoow Editing</a>
             <ul class="nav-links">
-                <li><a href="#projets">Projets</a></li>
-                <li><a href="#clients">Clients</a></li>
-                <li><a href="#chiffres">Chiffres</a></li>
+                <li><a onclick="showMainPage('#projets')">Projets</a></li>
+                <li><a onclick="showMainPage('#clients')">Clients</a></li>
+                <li><a onclick="showMainPage('#chiffres')">Chiffres</a></li>
                 <li><a onclick="openContactModal()">Contact</a></li>
             </ul>
         </div>
     </nav>
 
-    <!-- Bandeau annonce -->
-    <div class="ribbon">
-        Disponible pour de nouveaux projets de montage vidéo. <button onclick="openContactModal()">Me contacter &rsaquo;</button>
-    </div>
-
-    <!-- Section Hero -->
-    <section class="hero">
-        <span class="hero-tag">Sitoow Editing</span>
-        <h1>Montage Vidéo.</h1>
-        <h2>Repensé avec précision, rythme et émotion.</h2>
-        <div class="cta-buttons">
-            <a href="#projets" class="btn-primary">Voir les créations</a>
-            <button class="btn-secondary" onclick="openContactModal()">Me contacter &rsaquo;</button>
+    <!-- Page Principale -->
+    <div id="main-page">
+        <div class="ribbon">
+            Disponible pour de nouveaux projets de montage vidéo. <button onclick="openContactModal()">Me contacter &rsaquo;</button>
         </div>
-        
-        <div class="hero-showcase">
-            <video autoplay loop muted playsinline poster="https://via.placeholder.com/1200x675/000000/ffffff?text=Remplacez+par+votre+Showreel.mp4">
-                <source src="votre-showreel.mp4" type="video/mp4">
-            </video>
-        </div>
-    </section>
 
-    <!-- Section Projets Grid -->
-    <h2 class="section-title" id="projets">Dernières Réalisations.</h2>
-    <div class="grid-container">
-
-        <!-- Carte 1 : Vidéos YouTube -->
-        <div class="card">
-            <div class="card-header">
-                <h3>Vidéos YouTube & Vlogs</h3>
+        <section class="hero">
+            <span class="hero-tag">Sitoow Editing</span>
+            <h1>Montage Vidéo.</h1>
+            <h2>Repensé avec précision, rythme et émotion.</h2>
+            <div class="cta-buttons">
+                <a href="#projets" class="btn-primary">Voir les créations</a>
+                <button class="btn-secondary" onclick="openContactModal()">Me contacter &rsaquo;</button>
             </div>
-            <p class="service-description">Rythme dynamique, narration engageante et sound design immersif optimisés pour la rétention sur YouTube.</p>
-            <div class="card-media">
-                <video autoplay loop muted playsinline poster="https://via.placeholder.com/600x337/111111/86868b?text=Insérer+Vidéo+YouTube+(mp4)">
-                    <source src="projet-youtube.mp4" type="video/mp4">
+            <div class="hero-showcase">
+                <video autoplay loop muted playsinline poster="https://via.placeholder.com/1200x675/000000/ffffff?text=Remplacez+par+votre+Showreel.mp4">
+                    <source src="votre-showreel.mp4" type="video/mp4">
                 </video>
             </div>
-            <button class="card-btn" onclick="openContactModal()">Découvrir les créations &rsaquo;</button>
-        </div>
+        </section>
 
-        <!-- Carte 2 : Formats Courts -->
-        <div class="card">
-            <div class="card-header">
-                <h3>Formats Courts & TikTok / Reels</h3>
-            </div>
-            <p class="service-description">Format vertical 9:16 optimisé avec sous-titres animés et effets visuels accrocheurs dès la 1ère seconde.</p>
-            <div class="card-media">
-                <video autoplay loop muted playsinline poster="https://via.placeholder.com/600x337/111111/86868b?text=Insérer+Vidéo+Short/TikTok">
-                    <source src="projet-short.mp4" type="video/mp4">
-                </video>
-            </div>
-            <button class="card-btn" onclick="openContactModal()">Découvrir les créations &rsaquo;</button>
-        </div>
-
-        <!-- Carte 3 : Motion Design -->
-        <div class="card">
-            <div class="card-header">
-                <h3>Motion Design</h3>
-            </div>
-            <p class="service-description">Animations graphiques, étalonnage de couleur haut de gamme et habillage visuel sur mesure.</p>
-            <div class="card-media">
-                <video autoplay loop muted playsinline poster="https://via.placeholder.com/600x337/111111/86868b?text=Insérer+Vidéo+Motion+Design">
-                    <source src="projet-motion.mp4" type="video/mp4">
-                </video>
-            </div>
-            <button class="card-btn" onclick="openContactModal()">Découvrir les créations &rsaquo;</button>
-        </div>
-
-    </div>
-
-    <!-- Section Clients -->
-    <section id="clients" style="max-width: 1200px; margin: 100px auto 40px auto; padding: 0 20px;">
-        <h2 class="section-title">Ils me font confiance.</h2>
-        <p style="text-align: center; color: var(--text-secondary); font-size: 20px; margin-bottom: 50px;">Créateurs, marques et organisations qui collaborent avec Sitoow Editing :</p>
-        
+        <h2 class="section-title" id="projets">Dernières Réalisations.</h2>
         <div class="grid-container">
-            <!-- Carte 1: Créateurs YouTube -->
-            <div class="client-card">
-                <div>
-                    <div class="client-avatar">🎥</div>
-                    <h3>Créateurs YouTube</h3>
-                    <div class="client-role">Vlogs, Divertissement & Concepts</div>
+            <div class="card">
+                <h3 class="card-title">Vidéos YouTube & Vlogs</h3>
+                <p class="card-description">Rythme dynamique, narration engageante et sound design immersif.</p>
+                <div class="card-media">
+                    <video autoplay loop muted playsinline poster="https://via.placeholder.com/600x337/111111/86868b?text=Aperçu+YouTube">
+                        <source src="projet-youtube.mp4" type="video/mp4">
+                    </video>
                 </div>
-                <p>Storytelling fluide, rythme personnalisé et rétention maximale pour développer la communauté et l'engagement.</p>
-                <button class="client-btn" onclick="openContactModal()">Découvrir les clients &rsaquo;</button>
+                <button class="card-btn" onclick="openGallery('youtube')">Découvrir les créations &rsaquo;</button>
             </div>
 
-            <!-- Carte 2: Entreprises & Marques -->
-            <div class="client-card">
-                <div>
-                    <div class="client-avatar">🚀</div>
-                    <h3>Entreprises & Marques</h3>
-                    <div class="client-role">Vidéos Promo & Réseaux Sociaux</div>
+            <div class="card">
+                <h3 class="card-title">Formats Courts & TikTok / Reels</h3>
+                <p class="card-description">Format vertical 9:16 optimisé avec sous-titres animés et effets visuels.</p>
+                <div class="card-media">
+                    <video autoplay loop muted playsinline poster="https://via.placeholder.com/600x337/111111/86868b?text=Aperçu+Shorts">
+                        <source src="projet-short.mp4" type="video/mp4">
+                    </video>
                 </div>
-                <p>Montages professionnels, habillage graphique moderne et formats courts optimisés pour capter de nouveaux clients.</p>
-                <button class="client-btn" onclick="openContactModal()">Découvrir les clients &rsaquo;</button>
+                <button class="card-btn" onclick="openGallery('shorts')">Découvrir les créations &rsaquo;</button>
             </div>
 
-            <!-- Carte 3: Associations -->
-            <div class="client-card">
-                <div>
-                    <div class="client-avatar">🤝</div>
-                    <h3>Associations</h3>
-                    <div class="client-role">Projets Événementiels & Institutionnels</div>
+            <div class="card">
+                <h3 class="card-title">Motion Design</h3>
+                <p class="card-description">Animations graphiques, étalonnage de couleur et habillage sur mesure.</p>
+                <div class="card-media">
+                    <video autoplay loop muted playsinline poster="https://via.placeholder.com/600x337/111111/86868b?text=Aperçu+Motion">
+                        <source src="projet-motion.mp4" type="video/mp4">
+                    </video>
                 </div>
-                <p>Vidéos impactantes, reportages engagés et présentations visuelles pour promouvoir vos projets et mobiliser votre public.</p>
-                <button class="client-btn" onclick="openContactModal()">Découvrir les clients &rsaquo;</button>
+                <button class="card-btn" onclick="openGallery('motion')">Découvrir les créations &rsaquo;</button>
             </div>
         </div>
-    </section>
 
-    <!-- Section Chiffres / Specs -->
-    <section class="specs-section" id="chiffres">
-        <h2 style="font-size: 36px; font-weight: 600; margin-bottom: 10px;">Conçu pour l'impact.</h2>
-        <p style="color: var(--text-secondary); font-size: 19px;">Une expertise au service de vos vues et de votre image de marque.</p>
+        <section id="clients" style="max-width: 1200px; margin: 100px auto 40px auto; padding: 0 20px;">
+            <h2 class="section-title">Ils me font confiance.</h2>
+            <div class="grid-container">
+                <div class="client-card">
+                    <div>
+                        <div class="client-avatar">🎥</div>
+                        <h3>Créateurs YouTube</h3>
+                        <div class="client-role">Vlogs, Divertissement & Concepts</div>
+                    </div>
+                    <p>Storytelling fluide, rythme personnalisé et rétention maximale.</p>
+                    <button class="client-btn" onclick="openContactModal()">Découvrir les clients &rsaquo;</button>
+                </div>
+
+                <div class="client-card">
+                    <div>
+                        <div class="client-avatar">🚀</div>
+                        <h3>Entreprises & Marques</h3>
+                        <div class="client-role">Vidéos Promo & Réseaux Sociaux</div>
+                    </div>
+                    <p>Montages professionnels et habillage graphique moderne.</p>
+                    <button class="client-btn" onclick="openContactModal()">Découvrir les clients &rsaquo;</button>
+                </div>
+
+                <div class="client-card">
+                    <div>
+                        <div class="client-avatar">🤝</div>
+                        <h3>Associations</h3>
+                        <div class="client-role">Projets Événementiels</div>
+                    </div>
+                    <p>Vidéos impactantes, reportages engagés et présentations visuelles.</p>
+                    <button class="client-btn" onclick="openContactModal()">Découvrir les clients &rsaquo;</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="specs-section" id="chiffres">
+            <h2 style="font-size: 36px; font-weight: 600; margin-bottom: 10px;">Conçu pour l'impact.</h2>
+            <div class="specs-grid">
+                <div class="spec-item">
+                    <h4>+25M</h4>
+                    <p>Vues cumulées sur les vidéos montées</p>
+                </div>
+                <div class="spec-item">
+                    <h4>4K</h4>
+                    <p>Étalonnage & Rendu ultra haute définition</p>
+                </div>
+                <div class="spec-item">
+                    <h4>100%</h4>
+                    <p>Projets livrés dans les temps</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Page Galerie -->
+    <div id="gallery-page" class="gallery-page">
+        <button class="back-btn" onclick="showMainPage('#projets')">&lsaquo; Retour aux projets</button>
         
-        <div class="specs-grid">
-            <div class="spec-item">
-                <h4>+50M</h4>
-                <p>Vues cumulées sur les vidéos montées</p>
-            </div>
-            <div class="spec-item">
-                <h4>4K</h4>
-                <p>Étalonnage & Rendu ultra haute définition</p>
-            </div>
-            <div class="spec-item">
-                <h4>100%</h4>
-                <p>Projets livrés dans les temps</p>
-            </div>
-        </div>
-    </section>
+        <h1 id="gallery-title" style="font-size: 48px; font-weight: 600; margin-bottom: 8px;">Nos Créations</h1>
+        <p id="gallery-subtitle" style="color: var(--text-secondary); font-size: 18px; margin-bottom: 40px;">Découvrez mes réalisations récentes.</p>
 
-    <!-- Footer -->
+        <div class="gallery-grid" id="gallery-grid-content"></div>
+    </div>
+
     <footer>
         <div class="footer-content">
             <p>Copyright © 2026 Sitoow Editing. Tous droits réservés.</p>
@@ -715,69 +261,120 @@
         </div>
     </footer>
 
-    <!-- Modal Pop-up Contact / Discord / Email -->
-    <div class="modal-overlay" id="contactModal" onclick="closeModalOnOuterClick(event)">
+    <!-- Modal Contact -->
+    <div class="modal-overlay" id="contactModal" onclick="closeModalOnOuterClick(event, 'contactModal')">
         <div class="modal-card">
-            <!-- Toast de notification lors de la copie -->
             <div class="toast" id="toastNotification">✓ Adresse e-mail copiée !</div>
-
             <h3>Contacte Sitoow Editing</h3>
             <p style="color: var(--text-secondary);">Discutons directement de ton projet :</p>
-            
             <div class="contact-box">
                 <div class="discord-tag">Discord : sitoow</div>
-                <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 12px;">ou clique ci-dessous pour copier mon adresse mail :</p>
-                <button class="email-btn" onclick="copyEmail()">
-                    📋 Copier l'adresse mail (sito62114@gmail.com)
-                </button>
+                <button class="email-btn" onclick="copyEmail()">📋 Copier l'adresse mail (sito62114@gmail.com)</button>
             </div>
-
-            <p class="response-time">⚡ Réponse en moins de 24h</p>
-            <button class="close-btn" onclick="closeContactModal()">Fermer</button>
+            <button class="close-btn" onclick="closeModal('contactModal')">Fermer</button>
         </div>
     </div>
 
     <script>
-        function openContactModal() {
-            const modal = document.getElementById('contactModal');
-            modal.classList.add('active');
+        // =========================================================================
+        // 🎬 VOS VIDÉOS : C'est ici que vous ajoutez ou supprimez vos projets !
+        // =========================================================================
+        const myPortfolioData = {
+            'youtube': [
+                { 
+                    title: "Mon Vlog d'Aventure", 
+                    tag: "YouTube", 
+                    link: "https://youtube.com", 
+                    thumb: "https://via.placeholder.com/600x337/1c2541/ffffff?text=Vidéo+1" 
+                },
+                { 
+                    title: "Concept Défi 24H", 
+                    tag: "YouTube", 
+                    link: "https://youtube.com", 
+                    thumb: "https://via.placeholder.com/600x337/111111/ffffff?text=Vidéo+2" 
+                }
+            ],
+            'shorts': [
+                { 
+                    title: "Short Dynamic #1", 
+                    tag: "TikTok", 
+                    link: "https://tiktok.com", 
+                    thumb: "https://via.placeholder.com/600x337/1c2541/ffffff?text=Short+1" 
+                }
+            ],
+            'motion': [
+                { 
+                    title: "Showreel Motion Graphics", 
+                    tag: "Motion", 
+                    link: "#", 
+                    thumb: "https://via.placeholder.com/600x337/1c2541/ffffff?text=Motion+1" 
+                }
+            ]
+        };
+
+        // =========================================================================
+        // FONCTIONNEMENT DU SITE
+        // =========================================================================
+        function openGallery(categoryKey) {
+            const videos = myPortfolioData[categoryKey] || [];
+
+            const titles = {
+                'youtube': "Vidéos YouTube & Vlogs",
+                'shorts': "Formats Courts & TikTok",
+                'motion': "Motion Design & VFX"
+            };
+
+            document.getElementById('gallery-title').innerText = titles[categoryKey];
+            const container = document.getElementById('gallery-grid-content');
+            container.innerHTML = "";
+
+            videos.forEach((item) => {
+                const card = document.createElement('div');
+                card.className = "video-item-card";
+                card.innerHTML = `
+                    <div class="video-item-header">
+                        <span class="video-item-title">${item.title}</span>
+                        <span class="video-item-tag">${item.tag}</span>
+                    </div>
+                    <a href="${item.link}" target="_blank" class="video-item-thumb">
+                        <img src="${item.thumb}" alt="${item.title}">
+                        <div class="play-overlay">
+                            <div class="play-icon">▶</div>
+                        </div>
+                    </a>
+                `;
+                container.appendChild(card);
+            });
+
+            document.getElementById('main-page').style.display = "none";
+            document.getElementById('gallery-page').classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function closeContactModal() {
-            const modal = document.getElementById('contactModal');
-            modal.classList.remove('active');
-        }
-
-        function closeModalOnOuterClick(event) {
-            if (event.target.id === 'contactModal') {
-                closeContactModal();
+        function showMainPage(targetAnchor = null) {
+            document.getElementById('gallery-page').classList.remove('active');
+            document.getElementById('main-page').style.display = "block";
+            if (targetAnchor) {
+                setTimeout(() => {
+                    const el = document.querySelector(targetAnchor);
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }, 50);
+            } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
 
-        function copyEmail() {
-            const email = "sito62114@gmail.com";
-            navigator.clipboard.writeText(email).then(() => {
-                const toast = document.getElementById('toastNotification');
-                toast.classList.add('show');
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                }, 2500);
-            }).catch(err => {
-                const tempInput = document.createElement("input");
-                tempInput.value = email;
-                document.body.appendChild(tempInput);
-                tempInput.select();
-                document.execCommand("copy");
-                document.body.removeChild(tempInput);
+        function openContactModal() { document.getElementById('contactModal').classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        function closeModalOnOuterClick(event, id) { if (event.target.id === id) closeModal(id); }
 
+        function copyEmail() {
+            navigator.clipboard.writeText("sito62114@gmail.com").then(() => {
                 const toast = document.getElementById('toastNotification');
                 toast.classList.add('show');
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                }, 2500);
+                setTimeout(() => toast.classList.remove('show'), 2500);
             });
         }
     </script>
-
 </body>
 </html>
