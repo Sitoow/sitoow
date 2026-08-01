@@ -3,118 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panneau Admin — Sitoow Editing</title>
-    <!-- Script Supabase -->
+    <title>Connexion Admin</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { font-family: -apple-system, sans-serif; background: #0d1117; color: #fff; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
-        .card { background: #161b22; border: 1px solid #30363d; padding: 30px; border-radius: 12px; width: 100%; max-width: 450px; }
-        h2 { margin-top: 0; text-align: center; }
-        label { display: block; margin-top: 10px; font-size: 14px; color: #8b949e; }
-        input { width: 100%; padding: 10px; margin: 6px 0 12px 0; background: #0d1117; border: 1px solid #30363d; color: #fff; border-radius: 6px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: #238636; color: #fff; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        button:hover { background: #2ea043; }
-        #admin-panel { display: none; }
-        .error { color: #f85149; font-size: 14px; margin-top: 10px; text-align: center; }
-        .success { color: #3fb950; font-size: 14px; margin-top: 10px; text-align: center; }
+        body { font-family: sans-serif; background: #0f172a; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: #1e293b; padding: 30px; border-radius: 10px; width: 300px; text-align: center; }
+        input { width: 100%; padding: 10px; margin: 10px 0; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background: #38bdf8; color: #0f172a; border: none; font-weight: bold; border-radius: 5px; cursor: pointer; }
+        .error { color: #ef4444; margin-top: 10px; font-size: 14px; }
     </style>
 </head>
 <body>
 
-    <!-- 1. FORMULAIRE DE CONNEXION -->
-    <div class="card" id="login-box">
-        <h2>Connexion Mode Admin</h2>
-        <label>E-mail</label>
-        <input type="email" id="email" placeholder="ton-email@gmail.com">
-        <label>Mot de passe</label>
-        <input type="password" id="password" placeholder="••••••••">
+    <div class="card">
+        <h2>Connexion Admin</h2>
+        <input type="email" id="email" placeholder="E-mail">
+        <input type="password" id="password" placeholder="Mot de passe">
         <button onclick="login()">Se connecter</button>
-        <div class="error" id="error-msg"></div>
-    </div>
-
-    <!-- 2. PANNEAU ADMIN (AJOUT DE VIDÉOS DIRECT DEPUIS LE SITE) -->
-    <div class="card" id="admin-panel">
-        <h2>Ajouter une vidéo 🎬</h2>
-        
-        <label>Titre de la vidéo</label>
-        <input type="text" id="video-title" placeholder="Ex: Montage FX Gaming">
-
-        <label>Lien de la vidéo (YouTube / TikTok)</label>
-        <input type="text" id="video-link" placeholder="https://www.youtube.com/watch?v=...">
-
-        <label>Lien de la miniature (Image)</label>
-        <input type="text" id="video-thumb" placeholder="https://i.ytimg.com/vi/...">
-
-        <button onclick="addVideo()">Publier sur le site</button>
-        <div id="status-msg"></div>
-
-        <button onclick="logout()" style="background: #da3633; margin-top: 20px;">Se déconnecter</button>
+        <p class="error" id="err-msg"></p>
     </div>
 
     <script>
-        // ⚙️ REMPLACE CES 2 INFORMATIONS AVEC VOS CLÉS SUPABASE
-        const SUPABASE_URL = "https://kiarcshzgolzncdidnpj.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_oWotd3kAm3ub2oAl-tHDIw_QoZzPg3R";
-
+        // ⚙️ Tes clés Supabase
+        const SUPABASE_URL = "https://TON_PROJET.supabase.co"; 
+        const SUPABASE_KEY = "sb_publishable_oWotd3kAm3ub2oAl-tHDIw_QoZzPg3R"; 
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // Connexion au compte unique
+        // Si tu es déjà connecté, redirige tout de suite sur le site principal
+        async function checkSession() {
+            const { data } = await _supabase.auth.getSession();
+            if (data && data.session) {
+                window.location.href = "../index.html";
+            }
+        }
+        checkSession();
+
+        // Se connecter et rediriger vers le site principal
         async function login() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            const errorMsg = document.getElementById('error-msg');
+            const errMsg = document.getElementById('err-msg');
 
-            const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
-
-            if (error) {
-                errorMsg.innerText = "Identifiants incorrects !";
-            } else {
-                showAdminPanel();
-            }
-        }
-
-        // Ajouter une vidéo directement
-        async function addVideo() {
-            const title = document.getElementById('video-title').value;
-            const link = document.getElementById('video-link').value;
-            const thumb = document.getElementById('video-thumb').value;
-            const statusMsg = document.getElementById('status-msg');
-
-            if (!title || !link) {
-                statusMsg.innerHTML = "<p class='error'>Veuillez remplir au moins le titre et le lien !</p>";
-                return;
-            }
-
-            const { data, error } = await _supabase
-                .from('videos')
-                .insert([{ title, link, thumb }]);
+            const { error } = await _supabase.auth.signInWithPassword({ email, password });
 
             if (error) {
-                statusMsg.innerHTML = "<p class='error'>Erreur lors de l'ajout : " + error.message + "</p>";
+                errMsg.innerText = "Identifiants incorrects !";
             } else {
-                statusMsg.innerHTML = "<p class='success'>✅ Vidéo ajoutée en direct sur le site !</p>";
-                document.getElementById('video-title').value = '';
-                document.getElementById('video-link').value = '';
-                document.getElementById('video-thumb').value = '';
+                // REDIRECTION VERS LE SITE PRINCIPAL EN MODE ADMIN
+                window.location.href = "../index.html";
             }
         }
-
-        async function logout() {
-            await _supabase.auth.signOut();
-            location.reload();
-        }
-
-        function showAdminPanel() {
-            document.getElementById('login-box').style.display = 'none';
-            document.getElementById('admin-panel').style.display = 'block';
-        }
-
-        // Auto-connexion si déjà connecté
-        async function checkSession() {
-            const { data } = await _supabase.auth.getSession();
-            if (data.session) showAdminPanel();
-        }
-        checkSession();
     </script>
 </body>
 </html>
