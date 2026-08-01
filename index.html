@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sitoow Editing — Monteur Vidéo</title>
+    <!-- Chargement du SDK Supabase JS via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --bg-color: #000000;
@@ -352,12 +354,12 @@
     <div class="modal-overlay" id="addVideoModal" onclick="closeModalOnOuterClick(event, 'addVideoModal')">
         <div class="modal-card">
             <h3>Ajouter une Vidéo</h3>
-            <p style="color: var(--text-secondary); margin-bottom: 20px;">Ajoutez un nouveau projet à cette catégorie.</p>
+            <p style="color: var(--text-secondary); margin-bottom: 20px;">Ajoutez un nouveau projet directement dans Supabase.</p>
             <input type="text" id="videoTitleInput" class="input-field" placeholder="Titre de la vidéo">
             <input type="text" id="videoTagInput" class="input-field" placeholder="Tag (ex: YouTube, Reel, 4K)">
             <input type="text" id="videoLinkInput" class="input-field" placeholder="Lien de la vidéo (ex: https://youtube.com/...)">
             <input type="text" id="videoThumbInput" class="input-field" placeholder="Lien de l'image de couverture (URL)">
-            <button class="email-btn" onclick="saveNewVideo()">Publier la vidéo</button>
+            <button id="submitVideoBtn" class="email-btn" onclick="saveNewVideo()">Publier la vidéo</button>
             <br><br>
             <button class="close-btn" onclick="closeModal('addVideoModal')">Annuler</button>
         </div>
@@ -379,45 +381,20 @@
 
     <script>
         // =========================================================================
-        // 🔑 CONFIGURATION ADMIN & DONNÉES DE BASE
+        // ⚡ CONFIGURATION SUPABASE
         // =========================================================================
-        const ADMIN_PASSWORD = "admin123"; // <-- MODIFIEZ VOTRE MOT DE PASSE ICI
+        // REMPLACE PAR TES PROPRES CLÉS OBTENUES SUR SUPABASE (Dashboard > Project Settings > API)
+        const SUPABASE_URL = 'https://TON-PROJET.supabase.co';
+        const SUPABASE_ANON_KEY = 'TA-CLE-ANON-PUBLIQUE';
+
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // =========================================================================
+        // 🔑 CONFIGURATION ADMIN
+        // =========================================================================
+        const ADMIN_PASSWORD = "admin123"; // <-- Ton mot de passe de connexion site
         let isAdminLoggedIn = false;
         let currentActiveCategory = 'youtube';
-
-        // Charger ou initialiser les projets
-        let myPortfolioData = JSON.parse(localStorage.getItem('sitoow_portfolio_data')) || {
-            'youtube': [
-                { 
-                    title: "Mon Vlog d'Aventure", 
-                    tag: "YouTube", 
-                    link: "https://youtube.com", 
-                    thumb: "https://via.placeholder.com/600x337/1c2541/ffffff?text=Vidéo+1" 
-                },
-                { 
-                    title: "Concept Défi 24H", 
-                    tag: "YouTube", 
-                    link: "https://youtube.com", 
-                    thumb: "https://via.placeholder.com/600x337/111111/ffffff?text=Vidéo+2" 
-                }
-            ],
-            'shorts': [
-                { 
-                    title: "Short Dynamic #1", 
-                    tag: "TikTok", 
-                    link: "https://tiktok.com", 
-                    thumb: "https://via.placeholder.com/600x337/1c2541/ffffff?text=Short+1" 
-                }
-            ],
-            'motion': [
-                { 
-                    title: "Showreel Motion Graphics", 
-                    tag: "Motion", 
-                    link: "#", 
-                    thumb: "https://via.placeholder.com/600x337/1c2541/ffffff?text=Motion+1" 
-                }
-            ]
-        };
 
         // =========================================================================
         // 🔒 GESTION DU MODE ADMIN & INITIALISATION
@@ -428,7 +405,7 @@
                 setAdminMode(true);
             }
 
-            // Détection automatique si l'URL contient #admin
+            // Détection automatique du hash #admin dans l'URL
             if (window.location.hash === '#admin') {
                 if (!isAdminLoggedIn) {
                     openModal('loginModal');
@@ -436,7 +413,6 @@
             }
         });
 
-        // Détecte aussi si l'utilisateur change l'URL en direct avec #admin
         window.addEventListener('hashchange', () => {
             if (window.location.hash === '#admin' && !isAdminLoggedIn) {
                 openModal('loginModal');
@@ -445,7 +421,6 @@
 
         function toggleAdminLogin() {
             if (isAdminLoggedIn) {
-                // Déconnexion
                 setAdminMode(false);
                 localStorage.removeItem('sitoow_admin_session');
                 alert("Vous êtes déconnecté du Mode Admin.");
@@ -461,7 +436,7 @@
                 setAdminMode(true);
                 closeModal('loginModal');
                 document.getElementById('adminPasswordInput').value = "";
-                showMainPage(); // Redirection immédiate vers la page d'accueil en mode admin
+                showMainPage();
             } else {
                 alert("Mot de passe incorrect.");
             }
@@ -485,11 +460,10 @@
         }
 
         // =========================================================================
-        // 🎬 GESTION DE LA GALERIE & AJOUT DE VIDÉO
+        // 🎬 GALERIE & INTERACTION SUPABASE (LECTURE / ÉCRITURE)
         // =========================================================================
-        function openGallery(categoryKey) {
+        async function openGallery(categoryKey) {
             currentActiveCategory = categoryKey;
-            const videos = myPortfolioData[categoryKey] || [];
 
             const titles = {
                 'youtube': "Vidéos YouTube & Vlogs",
@@ -499,7 +473,6 @@
 
             document.getElementById('gallery-title').innerText = titles[categoryKey] || "Nos Créations";
             
-            // Afficher ou masquer le bouton d'ajout selon le statut Admin
             const addBtn = document.getElementById('addVideoBtn');
             if (isAdminLoggedIn) {
                 addBtn.classList.add('admin-visible');
@@ -507,28 +480,47 @@
                 addBtn.classList.remove('admin-visible');
             }
 
-            renderGalleryGrid();
-
             document.getElementById('main-page').style.display = "none";
             document.getElementById('gallery-page').classList.add('active');
             window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Charger les vidéos directement depuis Supabase
+            await fetchAndRenderVideos();
         }
 
-        function renderGalleryGrid() {
+        async function fetchAndRenderVideos() {
             const container = document.getElementById('gallery-grid-content');
-            container.innerHTML = "";
-            const videos = myPortfolioData[currentActiveCategory] || [];
+            container.innerHTML = "<p style='color: var(--text-secondary);'>Chargement des vidéos...</p>";
 
-            videos.forEach((item, index) => {
+            // Requête SELECT vers la table Supabase
+            const { data: videos, error } = await _supabase
+                .from('videos')
+                .select('*')
+                .eq('category', currentActiveCategory)
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error("Erreur Supabase :", error);
+                container.innerHTML = "<p style='color: #ff3b30;'>Erreur lors de la récupération des vidéos.</p>";
+                return;
+            }
+
+            if (!videos || videos.length === 0) {
+                container.innerHTML = "<p style='color: var(--text-secondary);'>Aucune vidéo trouvée pour le moment.</p>";
+                return;
+            }
+
+            container.innerHTML = "";
+            videos.forEach((item) => {
                 const card = document.createElement('div');
                 card.className = "video-item-card";
                 card.innerHTML = `
                     <div class="video-item-header">
                         <span class="video-item-title">${item.title}</span>
-                        <span class="video-item-tag">${item.tag}</span>
+                        <span class="video-item-tag">${item.tag || 'Projet'}</span>
                     </div>
-                    <a href="${item.link}" target="_blank" class="video-item-thumb">
-                        <img src="${item.thumb}" alt="${item.title}">
+                    <a href="${item.link || '#'}" target="_blank" class="video-item-thumb">
+                        <img src="${item.thumb || 'https://via.placeholder.com/600x337/1c2541/ffffff?text=Video'}" alt="${item.title}">
                         <div class="play-overlay">
                             <div class="play-icon">▶</div>
                         </div>
@@ -542,34 +534,51 @@
             openModal('addVideoModal');
         }
 
-        function saveNewVideo() {
+        async function saveNewVideo() {
             const title = document.getElementById('videoTitleInput').value.trim();
             const tag = document.getElementById('videoTagInput').value.trim() || "Projet";
             const link = document.getElementById('videoLinkInput').value.trim() || "#";
-            const thumb = document.getElementById('videoThumbInput').value.trim() || "https://via.placeholder.com/600x337/1c2541/ffffff?text=Nouvelle+Vidéo";
+            const thumb = document.getElementById('videoThumbInput').value.trim() || "https://via.placeholder.com/600x337/1c2541/ffffff?text=Nouvelle+Vid%C3%A9o";
 
             if (!title) {
                 alert("Veuillez entrer un titre pour la vidéo.");
                 return;
             }
 
-            const newVideo = { title, tag, link, thumb };
+            const submitBtn = document.getElementById('submitVideoBtn');
+            submitBtn.innerText = "Publication en cours...";
+            submitBtn.disabled = true;
 
-            if (!myPortfolioData[currentActiveCategory]) {
-                myPortfolioData[currentActiveCategory] = [];
+            // Enregistrement INSERT dans Supabase
+            const { data, error } = await _supabase
+                .from('videos')
+                .insert([
+                    {
+                        category: currentActiveCategory,
+                        title: title,
+                        tag: tag,
+                        link: link,
+                        thumb: thumb
+                    }
+                ]);
+
+            submitBtn.innerText = "Publier la vidéo";
+            submitBtn.disabled = false;
+
+            if (error) {
+                console.error("Erreur d'insertion Supabase :", error);
+                alert("Erreur lors de l'enregistrement dans Supabase : " + error.message);
+                return;
             }
 
-            myPortfolioData[currentActiveCategory].unshift(newVideo);
-            localStorage.setItem('sitoow_portfolio_data', JSON.stringify(myPortfolioData));
-
-            // Vider les champs
+            // Réinitialiser le formulaire
             document.getElementById('videoTitleInput').value = "";
             document.getElementById('videoTagInput').value = "";
             document.getElementById('videoLinkInput').value = "";
             document.getElementById('videoThumbInput').value = "";
 
             closeModal('addVideoModal');
-            renderGalleryGrid();
+            await fetchAndRenderVideos();
         }
 
         // Navigation
@@ -586,7 +595,7 @@
             }
         }
 
-        // Gestion Modales
+        // Modales & Utilitaires
         function openModal(id) { document.getElementById(id).classList.add('active'); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
         function closeModalOnOuterClick(event, id) { if (event.target.id === id) closeModal(id); }
