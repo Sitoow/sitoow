@@ -420,11 +420,26 @@
         };
 
         // =========================================================================
-        // 🔒 GESTION DU MODE ADMIN
+        // 🔒 GESTION DU MODE ADMIN & INITIALISATION
         // =========================================================================
         window.addEventListener('DOMContentLoaded', () => {
+            // Vérifier la session active
             if (localStorage.getItem('sitoow_admin_session') === 'true') {
                 setAdminMode(true);
+            }
+
+            // Détection automatique si l'URL contient #admin
+            if (window.location.hash === '#admin') {
+                if (!isAdminLoggedIn) {
+                    openModal('loginModal');
+                }
+            }
+        });
+
+        // Détecte aussi si l'utilisateur change l'URL en direct avec #admin
+        window.addEventListener('hashchange', () => {
+            if (window.location.hash === '#admin' && !isAdminLoggedIn) {
+                openModal('loginModal');
             }
         });
 
