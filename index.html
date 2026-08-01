@@ -12,6 +12,7 @@
             --text-secondary: #86868b;
             --accent-blue: #0071e3;
             --accent-blue-hover: #0077ed;
+            --accent-green: #34c759;
             --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
         }
 
@@ -26,11 +27,37 @@
             z-index: 999; display: flex; justify-content: center; align-items: center;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .nav-content { width: 100%; max-width: 980px; padding: 0 22px; display: flex; justify-content: space-between; align-items: center; }
+        .nav-content { width: 100%; max-width: 1000px; padding: 0 22px; display: flex; justify-content: space-between; align-items: center; }
         .nav-logo { font-size: 19px; font-weight: 600; color: var(--text-primary); text-decoration: none; cursor: pointer; }
-        .nav-links { display: flex; gap: 32px; list-style: none; align-items: center; }
+        .nav-links { display: flex; gap: 24px; list-style: none; align-items: center; }
         .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 12px; transition: color 0.3s ease; cursor: pointer; }
         .nav-links a:hover { color: var(--text-primary); }
+
+        /* Badge Admin Nav */
+        .admin-status {
+            display: none;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--accent-green);
+            background: rgba(52, 199, 89, 0.15);
+            padding: 3px 10px;
+            border-radius: 12px;
+            border: 1px solid rgba(52, 199, 89, 0.3);
+        }
+        .admin-status.active { display: flex; }
+        .admin-status .dot { width: 6px; height: 6px; background: var(--accent-green); border-radius: 50%; }
+
+        .admin-btn-nav {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary) !important;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px !important;
+            transition: all 0.2s ease;
+        }
+        .admin-btn-nav:hover { background: rgba(255, 255, 255, 0.2); }
 
         .ribbon { margin-top: 44px; background-color: #1d1d1f; text-align: center; padding: 12px 20px; font-size: 14px; color: var(--text-secondary); }
         .ribbon button { background: none; border: none; color: var(--accent-blue); font-size: 14px; cursor: pointer; font-family: inherit; }
@@ -80,8 +107,31 @@
         /* Galerie et Créations */
         .gallery-page { display: none; padding-top: 80px; padding-bottom: 100px; min-height: 100vh; max-width: 1200px; margin: 0 auto; padding-left: 20px; padding-right: 20px; }
         .gallery-page.active { display: block; }
-        .back-btn { background: rgba(255, 255, 255, 0.08); color: var(--text-primary); border: 1px solid rgba(255, 255, 255, 0.1); padding: 10px 20px; border-radius: 980px; font-size: 14px; cursor: pointer; transition: all 0.2s ease; margin-bottom: 30px; }
+        
+        .gallery-header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .back-btn { background: rgba(255, 255, 255, 0.08); color: var(--text-primary); border: 1px solid rgba(255, 255, 255, 0.1); padding: 10px 20px; border-radius: 980px; font-size: 14px; cursor: pointer; transition: all 0.2s ease; }
         .back-btn:hover { background: rgba(255, 255, 255, 0.2); }
+
+        .add-video-btn {
+            display: none;
+            background: var(--accent-blue);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 980px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .add-video-btn:hover { background: var(--accent-blue-hover); }
+        .add-video-btn.admin-visible { display: inline-block; }
 
         .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 28px; margin-top: 40px; }
         .video-item-card { background: var(--card-bg); border-radius: 18px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.08); transition: transform 0.3s ease; display: flex; flex-direction: column; position: relative; }
@@ -99,12 +149,26 @@
         .play-icon { width: 50px; height: 50px; background: var(--accent-blue); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #fff; font-size: 20px; }
         .video-item-thumb:hover .play-overlay { opacity: 1; }
 
-        /* Modal Contact */
+        /* Modales */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 10000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: all 0.35s ease; }
         .modal-overlay.active { opacity: 1; visibility: visible; }
         .modal-card { background: #1d1d1f; border-radius: 20px; padding: 40px; max-width: 440px; width: 90%; text-align: center; border: 1px solid rgba(255, 255, 255, 0.1); transform: scale(0.85); transition: transform 0.35s ease; position: relative; }
         .modal-overlay.active .modal-card { transform: scale(1); }
         .modal-card h3 { font-size: 26px; margin-bottom: 12px; }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 16px;
+            margin-bottom: 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+        }
+        .input-field:focus { border-color: var(--accent-blue); }
 
         .contact-box { background: rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 20px; margin: 20px 0; border: 1px solid rgba(255, 255, 255, 0.08); }
         .discord-tag { background: #5865F2; color: #fff; padding: 12px 20px; border-radius: 12px; font-size: 20px; font-weight: 600; display: inline-block; margin-bottom: 16px; }
@@ -129,6 +193,14 @@
                 <li><a onclick="showMainPage('#clients')">Clients</a></li>
                 <li><a onclick="showMainPage('#chiffres')">Chiffres</a></li>
                 <li><a onclick="openContactModal()">Contact</a></li>
+                <li>
+                    <div id="adminStatusBadge" class="admin-status">
+                        <span class="dot"></span> Mode Admin
+                    </div>
+                </li>
+                <li>
+                    <a id="adminAuthBtn" onclick="toggleAdminLogin()" class="admin-btn-nav">Admin</a>
+                </li>
             </ul>
         </div>
     </nav>
@@ -246,7 +318,10 @@
 
     <!-- Page Galerie -->
     <div id="gallery-page" class="gallery-page">
-        <button class="back-btn" onclick="showMainPage('#projets')">&lsaquo; Retour aux projets</button>
+        <div class="gallery-header-bar">
+            <button class="back-btn" onclick="showMainPage('#projets')">&lsaquo; Retour aux projets</button>
+            <button id="addVideoBtn" class="add-video-btn" onclick="openAddVideoModal()">+ Ajouter une vidéo</button>
+        </div>
         
         <h1 id="gallery-title" style="font-size: 48px; font-weight: 600; margin-bottom: 8px;">Nos Créations</h1>
         <p id="gallery-subtitle" style="color: var(--text-secondary); font-size: 18px; margin-bottom: 40px;">Découvrez mes réalisations récentes.</p>
@@ -260,6 +335,33 @@
             <p><a onclick="openContactModal()" style="color: var(--accent-blue); cursor: pointer;">Me contacter</a></p>
         </div>
     </footer>
+
+    <!-- Modal Connexion Admin -->
+    <div class="modal-overlay" id="loginModal" onclick="closeModalOnOuterClick(event, 'loginModal')">
+        <div class="modal-card">
+            <h3>Connexion Admin</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 20px;">Saisissez votre mot de passe pour accéder au mode administration.</p>
+            <input type="password" id="adminPasswordInput" class="input-field" placeholder="Mot de passe admin">
+            <button class="email-btn" onclick="submitAdminLogin()">Se connecter</button>
+            <br><br>
+            <button class="close-btn" onclick="closeModal('loginModal')">Annuler</button>
+        </div>
+    </div>
+
+    <!-- Modal Ajouter une Vidéo -->
+    <div class="modal-overlay" id="addVideoModal" onclick="closeModalOnOuterClick(event, 'addVideoModal')">
+        <div class="modal-card">
+            <h3>Ajouter une Vidéo</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 20px;">Ajoutez un nouveau projet à cette catégorie.</p>
+            <input type="text" id="videoTitleInput" class="input-field" placeholder="Titre de la vidéo">
+            <input type="text" id="videoTagInput" class="input-field" placeholder="Tag (ex: YouTube, Reel, 4K)">
+            <input type="text" id="videoLinkInput" class="input-field" placeholder="Lien de la vidéo (ex: https://youtube.com/...)">
+            <input type="text" id="videoThumbInput" class="input-field" placeholder="Lien de l'image de couverture (URL)">
+            <button class="email-btn" onclick="saveNewVideo()">Publier la vidéo</button>
+            <br><br>
+            <button class="close-btn" onclick="closeModal('addVideoModal')">Annuler</button>
+        </div>
+    </div>
 
     <!-- Modal Contact -->
     <div class="modal-overlay" id="contactModal" onclick="closeModalOnOuterClick(event, 'contactModal')">
@@ -277,9 +379,14 @@
 
     <script>
         // =========================================================================
-        // 🎬 DONNÉES DU PORTFOLIO (Ajouter / Modifier les liens ici)
+        // 🔑 CONFIGURATION ADMIN & DONNÉES DE BASE
         // =========================================================================
-        const myPortfolioData = {
+        const ADMIN_PASSWORD = "admin123"; // <-- MODIFIEZ VOTRE MOT DE PASSE ICI
+        let isAdminLoggedIn = false;
+        let currentActiveCategory = 'youtube';
+
+        // Charger ou initialiser les projets
+        let myPortfolioData = JSON.parse(localStorage.getItem('sitoow_portfolio_data')) || {
             'youtube': [
                 { 
                     title: "Mon Vlog d'Aventure", 
@@ -313,9 +420,60 @@
         };
 
         // =========================================================================
-        // FONCTIONNEMENT DU SITE
+        // 🔒 GESTION DU MODE ADMIN
+        // =========================================================================
+        window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('sitoow_admin_session') === 'true') {
+                setAdminMode(true);
+            }
+        });
+
+        function toggleAdminLogin() {
+            if (isAdminLoggedIn) {
+                // Déconnexion
+                setAdminMode(false);
+                localStorage.removeItem('sitoow_admin_session');
+                alert("Vous êtes déconnecté du Mode Admin.");
+            } else {
+                openModal('loginModal');
+            }
+        }
+
+        function submitAdminLogin() {
+            const inputPwd = document.getElementById('adminPasswordInput').value;
+            if (inputPwd === ADMIN_PASSWORD) {
+                localStorage.setItem('sitoow_admin_session', 'true');
+                setAdminMode(true);
+                closeModal('loginModal');
+                document.getElementById('adminPasswordInput').value = "";
+                showMainPage(); // Redirection immédiate vers la page d'accueil en mode admin
+            } else {
+                alert("Mot de passe incorrect.");
+            }
+        }
+
+        function setAdminMode(status) {
+            isAdminLoggedIn = status;
+            const badge = document.getElementById('adminStatusBadge');
+            const authBtn = document.getElementById('adminAuthBtn');
+            const addVideoBtn = document.getElementById('addVideoBtn');
+
+            if (status) {
+                badge.classList.add('active');
+                authBtn.innerText = "Déconnexion";
+                if (addVideoBtn) addVideoBtn.classList.add('admin-visible');
+            } else {
+                badge.classList.remove('active');
+                authBtn.innerText = "Admin";
+                if (addVideoBtn) addVideoBtn.classList.remove('admin-visible');
+            }
+        }
+
+        // =========================================================================
+        // 🎬 GESTION DE LA GALERIE & AJOUT DE VIDÉO
         // =========================================================================
         function openGallery(categoryKey) {
+            currentActiveCategory = categoryKey;
             const videos = myPortfolioData[categoryKey] || [];
 
             const titles = {
@@ -325,10 +483,28 @@
             };
 
             document.getElementById('gallery-title').innerText = titles[categoryKey] || "Nos Créations";
+            
+            // Afficher ou masquer le bouton d'ajout selon le statut Admin
+            const addBtn = document.getElementById('addVideoBtn');
+            if (isAdminLoggedIn) {
+                addBtn.classList.add('admin-visible');
+            } else {
+                addBtn.classList.remove('admin-visible');
+            }
+
+            renderGalleryGrid();
+
+            document.getElementById('main-page').style.display = "none";
+            document.getElementById('gallery-page').classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderGalleryGrid() {
             const container = document.getElementById('gallery-grid-content');
             container.innerHTML = "";
+            const videos = myPortfolioData[currentActiveCategory] || [];
 
-            videos.forEach((item) => {
+            videos.forEach((item, index) => {
                 const card = document.createElement('div');
                 card.className = "video-item-card";
                 card.innerHTML = `
@@ -345,12 +521,43 @@
                 `;
                 container.appendChild(card);
             });
-
-            document.getElementById('main-page').style.display = "none";
-            document.getElementById('gallery-page').classList.add('active');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        function openAddVideoModal() {
+            openModal('addVideoModal');
+        }
+
+        function saveNewVideo() {
+            const title = document.getElementById('videoTitleInput').value.trim();
+            const tag = document.getElementById('videoTagInput').value.trim() || "Projet";
+            const link = document.getElementById('videoLinkInput').value.trim() || "#";
+            const thumb = document.getElementById('videoThumbInput').value.trim() || "https://via.placeholder.com/600x337/1c2541/ffffff?text=Nouvelle+Vidéo";
+
+            if (!title) {
+                alert("Veuillez entrer un titre pour la vidéo.");
+                return;
+            }
+
+            const newVideo = { title, tag, link, thumb };
+
+            if (!myPortfolioData[currentActiveCategory]) {
+                myPortfolioData[currentActiveCategory] = [];
+            }
+
+            myPortfolioData[currentActiveCategory].unshift(newVideo);
+            localStorage.setItem('sitoow_portfolio_data', JSON.stringify(myPortfolioData));
+
+            // Vider les champs
+            document.getElementById('videoTitleInput').value = "";
+            document.getElementById('videoTagInput').value = "";
+            document.getElementById('videoLinkInput').value = "";
+            document.getElementById('videoThumbInput').value = "";
+
+            closeModal('addVideoModal');
+            renderGalleryGrid();
+        }
+
+        // Navigation
         function showMainPage(targetAnchor = null) {
             document.getElementById('gallery-page').classList.remove('active');
             document.getElementById('main-page').style.display = "block";
@@ -364,9 +571,11 @@
             }
         }
 
-        function openContactModal() { document.getElementById('contactModal').classList.add('active'); }
+        // Gestion Modales
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
         function closeModalOnOuterClick(event, id) { if (event.target.id === id) closeModal(id); }
+        function openContactModal() { openModal('contactModal'); }
 
         function copyEmail() {
             navigator.clipboard.writeText("sito62114@gmail.com").then(() => {
