@@ -59,7 +59,7 @@
             transition: all 0.3s ease;
         }
 
-        /* Badge Admin Nav */
+        /* Badge Admin Nav (visible uniquement une fois connecté) */
         .admin-status {
             display: none;
             align-items: center;
@@ -71,19 +71,10 @@
             padding: 3px 10px;
             border-radius: 12px;
             border: 1px solid rgba(52, 199, 89, 0.3);
+            cursor: pointer;
         }
         .admin-status.active { display: flex; }
         .admin-status .dot { width: 6px; height: 6px; background: var(--accent-green); border-radius: 50%; }
-
-        .admin-btn-nav {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-primary) !important;
-            padding: 5px 12px;
-            border-radius: 8px;
-            font-size: 12px !important;
-            transition: all 0.2s ease;
-        }
-        .admin-btn-nav:hover { background: rgba(255, 255, 255, 0.2); }
 
         .ribbon { margin-top: 48px; background-color: #1d1d1f; text-align: center; padding: 12px 16px; font-size: 13px; color: var(--text-secondary); }
         .ribbon button { background: none; border: none; color: var(--accent-blue); font-size: 13px; cursor: pointer; font-family: inherit; }
@@ -268,9 +259,7 @@
         .toast { position: absolute; top: 12px; left: 50%; transform: translateX(-50%) translateY(-10px); background: #34c759; color: #ffffff; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; opacity: 0; pointer-events: none; transition: all 0.3s ease; width: max-content; }
         .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-        /* =========================================================================
-           📱 OPTIMISATIONS RESPONSIVE / MOBILE
-           ========================================================================= */
+        /* Mobile Responsive */
         @media (max-width: 768px) {
             .menu-toggle { display: flex; }
 
@@ -331,12 +320,9 @@
                 <li><a onclick="showMainPage('#chiffres')">Chiffres</a></li>
                 <li><a onclick="openContactModal()">Contact</a></li>
                 <li>
-                    <div id="adminStatusBadge" class="admin-status">
-                        <span class="dot"></span> Mode Admin
+                    <div id="adminStatusBadge" class="admin-status" onclick="logoutAdmin()" title="Cliquer pour se déconnecter">
+                        <span class="dot"></span> Déconnexion Admin
                     </div>
-                </li>
-                <li>
-                    <a id="adminAuthBtn" onclick="toggleAdminLogin()" class="admin-btn-nav">Admin</a>
                 </li>
             </ul>
         </div>
@@ -538,12 +524,22 @@
             const { data: { session } } = await _supabase.auth.getSession();
             if (session) setAdminMode(true);
 
-            if (window.location.hash === '#admin' && !isAdminLoggedIn) {
-                openModal('loginModal');
-            }
-
+            checkAdminHash();
             fetchAllClients();
         });
+
+        // Détection du changement de hash dans l'URL (ex: tape #admin)
+        window.addEventListener('hashchange', checkAdminHash);
+
+        function checkAdminHash() {
+            if (window.location.hash === '#admin') {
+                if (!isAdminLoggedIn) {
+                    openModal('loginModal');
+                } else {
+                    alert("Vous êtes déjà connecté en mode Admin.");
+                }
+            }
+        }
 
         _supabase.auth.onAuthStateChange((event, session) => {
             setAdminMode(!!session);
@@ -557,16 +553,6 @@
 
         function closeMobileMenu() {
             document.getElementById('navLinks').classList.remove('active');
-        }
-
-        async function toggleAdminLogin() {
-            closeMobileMenu();
-            if (isAdminLoggedIn) {
-                await _supabase.auth.signOut();
-                alert("Vous êtes déconnecté du Mode Admin.");
-            } else {
-                openModal('loginModal');
-            }
         }
 
         async function submitAdminLogin() {
@@ -590,14 +576,22 @@
                 closeModal('loginModal');
                 document.getElementById('adminEmailInput').value = "";
                 document.getElementById('adminPasswordInput').value = "";
+                // Nettoie l'URL sans recharger la page
+                history.pushState("", document.title, window.location.pathname + window.location.search);
                 showMainPage();
+            }
+        }
+
+        async function logoutAdmin() {
+            if (confirm("Voulez-vous vous déconnecter du Mode Admin ?")) {
+                await _supabase.auth.signOut();
+                alert("Vous êtes déconnecté.");
             }
         }
 
         function setAdminMode(status) {
             isAdminLoggedIn = status;
             document.getElementById('adminStatusBadge')?.classList.toggle('active', status);
-            document.getElementById('adminAuthBtn').innerText = status ? "Déconnexion" : "Admin";
             
             document.querySelectorAll('.add-client-btn').forEach(b => b.classList.toggle('admin-visible', status));
             document.querySelectorAll('.delete-logo-btn').forEach(b => b.classList.toggle('admin-visible', status));
