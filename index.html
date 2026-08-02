@@ -108,7 +108,7 @@
         .spec-item h4 { font-size: 48px; font-weight: 700; background: linear-gradient(180deg, #fff 0%, #86868b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .spec-item p { font-size: 15px; color: var(--text-secondary); }
 
-        /* Galerie et Créations */
+        /* Galerie / Pages de Détail */
         .gallery-page { display: none; padding-top: 80px; padding-bottom: 100px; min-height: 100vh; max-width: 1200px; margin: 0 auto; padding-left: 20px; padding-right: 20px; }
         .gallery-page.active { display: block; }
         
@@ -145,7 +145,6 @@
         .video-item-title { font-size: 16px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }
         .video-item-tag { font-size: 12px; color: var(--accent-blue); background: rgba(0, 113, 227, 0.15); padding: 4px 10px; border-radius: 20px; white-space: nowrap; }
 
-        /* Bouton Supprimer Admin */
         .delete-video-btn {
             display: none;
             background: rgba(255, 59, 48, 0.15);
@@ -159,13 +158,8 @@
             transition: all 0.2s ease;
             white-space: nowrap;
         }
-        .delete-video-btn:hover {
-            background: var(--accent-red);
-            color: #ffffff;
-        }
-        .delete-video-btn.admin-visible {
-            display: inline-block;
-        }
+        .delete-video-btn:hover { background: var(--accent-red); color: #ffffff; }
+        .delete-video-btn.admin-visible { display: inline-block; }
 
         .video-item-thumb { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; cursor: pointer; text-decoration: none; display: block; overflow: hidden; }
         .video-item-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
@@ -298,7 +292,7 @@
                         <div class="client-role">Vlogs, Divertissement & Concepts</div>
                     </div>
                     <p>Storytelling fluide, rythme personnalisé et rétention maximale.</p>
-                    <button class="client-btn" onclick="openContactModal()">Découvrir les clients &rsaquo;</button>
+                    <button class="client-btn" onclick="openClientPage('youtube-creators')">Voir les projets &rsaquo;</button>
                 </div>
 
                 <div class="client-card">
@@ -308,7 +302,7 @@
                         <div class="client-role">Vidéos Promo & Réseaux Sociaux</div>
                     </div>
                     <p>Montages professionnels et habillage graphique moderne.</p>
-                    <button class="client-btn" onclick="openContactModal()">Découvrir les clients &rsaquo;</button>
+                    <button class="client-btn" onclick="openClientPage('brands')">Voir les projets &rsaquo;</button>
                 </div>
 
                 <div class="client-card">
@@ -318,7 +312,7 @@
                         <div class="client-role">Projets Événementiels</div>
                     </div>
                     <p>Vidéos impactantes, reportages engagés et présentations visuelles.</p>
-                    <button class="client-btn" onclick="openContactModal()">Découvrir les clients &rsaquo;</button>
+                    <button class="client-btn" onclick="openClientPage('associations')">Voir les projets &rsaquo;</button>
                 </div>
             </div>
         </section>
@@ -342,10 +336,10 @@
         </section>
     </div>
 
-    <!-- Page Galerie -->
+    <!-- Page Galerie / Page Client -->
     <div id="gallery-page" class="gallery-page">
         <div class="gallery-header-bar">
-            <button class="back-btn" onclick="showMainPage('#projets')">&lsaquo; Retour aux projets</button>
+            <button class="back-btn" id="backBtn" onclick="showMainPage('#projets')">&lsaquo; Retour</button>
             <button id="addVideoBtn" class="add-video-btn" onclick="openAddVideoModal()">+ Ajouter une vidéo</button>
         </div>
         
@@ -362,15 +356,13 @@
         </div>
     </footer>
 
-    <!-- Modal Connexion Admin via Supabase Auth -->
+    <!-- Modal Connexion Admin -->
     <div class="modal-overlay" id="loginModal" onclick="closeModalOnOuterClick(event, 'loginModal')">
         <div class="modal-card">
             <h3>Connexion Admin</h3>
             <p style="color: var(--text-secondary); margin-bottom: 20px;">Connectez-vous avec vos identifiants Supabase.</p>
-            
             <input type="email" id="adminEmailInput" class="input-field" placeholder="Adresse e-mail Supabase">
             <input type="password" id="adminPasswordInput" class="input-field" placeholder="Mot de passe">
-            
             <button id="loginSubmitBtn" class="email-btn" onclick="submitAdminLogin()">Se connecter</button>
             <br><br>
             <button class="close-btn" onclick="closeModal('loginModal')">Annuler</button>
@@ -380,10 +372,10 @@
     <!-- Modal Ajouter une Vidéo -->
     <div class="modal-overlay" id="addVideoModal" onclick="closeModalOnOuterClick(event, 'addVideoModal')">
         <div class="modal-card">
-            <h3>Ajouter une Vidéo</h3>
+            <h3 id="modalVideoTitle">Ajouter une Vidéo</h3>
             <p style="color: var(--text-secondary); margin-bottom: 20px;">Ajoutez un nouveau projet directement dans Supabase.</p>
             <input type="text" id="videoTitleInput" class="input-field" placeholder="Titre de la vidéo">
-            <input type="text" id="videoTagInput" class="input-field" placeholder="Tag (ex: YouTube, Reel, 4K)">
+            <input type="text" id="videoTagInput" class="input-field" placeholder="Tag (ex: YouTube, Reel, Promo)">
             <input type="text" id="videoLinkInput" class="input-field" placeholder="Lien de la vidéo (ex: https://youtube.com/...)">
             <input type="text" id="videoThumbInput" class="input-field" placeholder="Lien de l'image de couverture (URL)">
             <button id="submitVideoBtn" class="email-btn" onclick="saveNewVideo()">Publier la vidéo</button>
@@ -410,49 +402,28 @@
         // =========================================================================
         // ⚡ CONFIGURATION SUPABASE
         // =========================================================================
-        // REMPLACE PAR TES PROPRES CLÉS OBTENUES SUR SUPABASE (Dashboard > Project Settings > API)
         const SUPABASE_URL = 'https://kiarcshzgolzncdidnpj.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_oWotd3kAm3ub2oAl-tHDIw_QoZzPg3R';
 
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // =========================================================================
-        // 🔒 GESTION DU MODE ADMIN VIA SUPABASE AUTH
-        // =========================================================================
         let isAdminLoggedIn = false;
-        let currentActiveCategory = 'youtube';
+        let currentMode = 'gallery'; // 'gallery' ou 'client'
+        let currentKey = 'youtube';   // Nom du filtre/slug actif
 
         window.addEventListener('DOMContentLoaded', async () => {
-            // 1. Vérifier si une session Supabase active existe au chargement de la page
             const { data: { session } } = await _supabase.auth.getSession();
-            if (session) {
-                setAdminMode(true);
-            }
+            if (session) setAdminMode(true);
 
-            // 2. Détection automatique du hash #admin dans l'URL
-            if (window.location.hash === '#admin') {
-                if (!isAdminLoggedIn) {
-                    openModal('loginModal');
-                }
-            }
-        });
-
-        // Écouter les changements d'état d'authentification Supabase (Connexion / Déconnexion)
-        _supabase.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_IN' && session) {
-                setAdminMode(true);
-            } else if (event === 'SIGNED_OUT') {
-                setAdminMode(false);
-            }
-        });
-
-        window.addEventListener('hashchange', () => {
             if (window.location.hash === '#admin' && !isAdminLoggedIn) {
                 openModal('loginModal');
             }
         });
 
-        // Bouton Admin dans la barre de navigation
+        _supabase.auth.onAuthStateChange((event, session) => {
+            setAdminMode(!!session);
+        });
+
         async function toggleAdminLogin() {
             if (isAdminLoggedIn) {
                 await _supabase.auth.signOut();
@@ -462,25 +433,17 @@
             }
         }
 
-        // Connexion réelle auprès de Supabase
         async function submitAdminLogin() {
             const email = document.getElementById('adminEmailInput').value.trim();
             const password = document.getElementById('adminPasswordInput').value;
 
-            if (!email || !password) {
-                alert("Veuillez remplir tous les champs.");
-                return;
-            }
+            if (!email || !password) return alert("Veuillez remplir tous les champs.");
 
             const btn = document.getElementById('loginSubmitBtn');
             btn.innerText = "Connexion...";
             btn.disabled = true;
 
-            // Tentative de connexion via Supabase Auth
-            const { data, error } = await _supabase.auth.signInWithPassword({
-                email: email,
-                password: password
-            });
+            const { error } = await _supabase.auth.signInWithPassword({ email, password });
 
             btn.innerText = "Se connecter";
             btn.disabled = false;
@@ -497,29 +460,20 @@
 
         function setAdminMode(status) {
             isAdminLoggedIn = status;
-            const badge = document.getElementById('adminStatusBadge');
-            const authBtn = document.getElementById('adminAuthBtn');
-            const addVideoBtn = document.getElementById('addVideoBtn');
-            const deleteButtons = document.querySelectorAll('.delete-video-btn');
-
-            if (status) {
-                if (badge) badge.classList.add('active');
-                if (authBtn) authBtn.innerText = "Déconnexion";
-                if (addVideoBtn) addVideoBtn.classList.add('admin-visible');
-                deleteButtons.forEach(btn => btn.classList.add('admin-visible'));
-            } else {
-                if (badge) badge.classList.remove('active');
-                if (authBtn) authBtn.innerText = "Admin";
-                if (addVideoBtn) addVideoBtn.classList.remove('admin-visible');
-                deleteButtons.forEach(btn => btn.classList.remove('admin-visible'));
-            }
+            document.getElementById('adminStatusBadge')?.classList.toggle('active', status);
+            document.getElementById('adminAuthBtn').innerText = status ? "Déconnexion" : "Admin";
+            document.getElementById('addVideoBtn')?.classList.toggle('admin-visible', status);
+            document.querySelectorAll('.delete-video-btn').forEach(b => b.classList.toggle('admin-visible', status));
         }
 
         // =========================================================================
-        // 🎬 GALERIE & INTERACTION SUPABASE (LECTURE / ÉCRITURE / SUPPRESSION)
+        // 🎬 GESTION DES GALERIES & PAGES CLIENTS
         // =========================================================================
+        
+        // Galerie par type de projet
         async function openGallery(categoryKey) {
-            currentActiveCategory = categoryKey;
+            currentMode = 'gallery';
+            currentKey = categoryKey;
 
             const titles = {
                 'youtube': "Vidéos YouTube & Vlogs",
@@ -528,53 +482,70 @@
             };
 
             document.getElementById('gallery-title').innerText = titles[categoryKey] || "Nos Créations";
-            
-            const addBtn = document.getElementById('addVideoBtn');
-            if (isAdminLoggedIn) {
-                addBtn.classList.add('admin-visible');
-            } else {
-                addBtn.classList.remove('admin-visible');
-            }
+            document.getElementById('gallery-subtitle').innerText = "Découvrez mes réalisations récentes.";
+            document.getElementById('backBtn').onclick = () => showMainPage('#projets');
 
-            document.getElementById('main-page').style.display = "none";
-            document.getElementById('gallery-page').classList.add('active');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-
-            // Charger les vidéos directement depuis Supabase
-            await fetchAndRenderVideos();
+            switchToPage();
+            await fetchAndRenderVideos('videos', 'category', currentKey);
         }
 
-        async function fetchAndRenderVideos() {
+        // Page spécifique Client
+        async function openClientPage(clientSlug) {
+            currentMode = 'client';
+            currentKey = clientSlug;
+
+            const clientTitles = {
+                'youtube-creators': "Créateurs YouTube",
+                'brands': "Entreprises & Marques",
+                'associations': "Associations"
+            };
+
+            document.getElementById('gallery-title').innerText = clientTitles[clientSlug] || "Espace Client";
+            document.getElementById('gallery-subtitle').innerText = "Projets réalisés spécifiquement pour cette catégorie de client.";
+            document.getElementById('backBtn').onclick = () => showMainPage('#clients');
+
+            switchToPage();
+            await fetchAndRenderVideos('clients', 'client_slug', currentKey);
+        }
+
+        function switchToPage() {
+            document.getElementById('main-page').style.display = "none";
+            document.getElementById('gallery-page').classList.add('active');
+            document.getElementById('addVideoBtn').classList.toggle('admin-visible', isAdminLoggedIn);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Charger les vidéos depuis Supabase (Table 'videos' ou 'clients')
+        async function fetchAndRenderVideos(tableName, fieldName, fieldValue) {
             const container = document.getElementById('gallery-grid-content');
             container.innerHTML = "<p style='color: var(--text-secondary);'>Chargement des vidéos...</p>";
 
-            // Requête SELECT vers la table Supabase
-            const { data: videos, error } = await _supabase
-                .from('videos')
+            const { data: items, error } = await _supabase
+                .from(tableName)
                 .select('*')
-                .eq('category', currentActiveCategory)
+                .eq(fieldName, fieldValue)
                 .order('created_at', { ascending: false });
 
             if (error) {
                 console.error("Erreur Supabase :", error);
-                container.innerHTML = "<p style='color: #ff3b30;'>Erreur lors de la récupération des vidéos.</p>";
+                container.innerHTML = "<p style='color: #ff3b30;'>Erreur lors du chargement. Vérifiez que la table existe.</p>";
                 return;
             }
 
-            if (!videos || videos.length === 0) {
+            if (!items || items.length === 0) {
                 container.innerHTML = "<p style='color: var(--text-secondary);'>Aucune vidéo trouvée pour le moment.</p>";
                 return;
             }
 
             container.innerHTML = "";
-            videos.forEach((item) => {
+            items.forEach((item) => {
                 const card = document.createElement('div');
                 card.className = "video-item-card";
                 card.innerHTML = `
                     <div class="video-item-header">
                         <span class="video-item-title">${item.title}</span>
                         <span class="video-item-tag">${item.tag || 'Projet'}</span>
-                        <button class="delete-video-btn ${isAdminLoggedIn ? 'admin-visible' : ''}" onclick="deleteVideo(${item.id})">🗑️ Supprimer</button>
+                        <button class="delete-video-btn ${isAdminLoggedIn ? 'admin-visible' : ''}" onclick="deleteVideo('${tableName}', ${item.id})">🗑️ Supprimer</button>
                     </div>
                     <a href="${item.link || '#'}" target="_blank" class="video-item-thumb">
                         <img src="${item.thumb || 'https://via.placeholder.com/600x337/1c2541/ffffff?text=Video'}" alt="${item.title}">
@@ -591,68 +562,62 @@
             openModal('addVideoModal');
         }
 
+        // Ajouter une vidéo dans la bonne table (videos ou clients)
         async function saveNewVideo() {
             const title = document.getElementById('videoTitleInput').value.trim();
             const tag = document.getElementById('videoTagInput').value.trim() || "Projet";
             const link = document.getElementById('videoLinkInput').value.trim() || "#";
             const thumb = document.getElementById('videoThumbInput').value.trim() || "https://via.placeholder.com/600x337/1c2541/ffffff?text=Nouvelle+Vid%C3%A9o";
 
-            if (!title) {
-                alert("Veuillez entrer un titre pour la vidéo.");
-                return;
-            }
+            if (!title) return alert("Veuillez entrer un titre.");
 
             const submitBtn = document.getElementById('submitVideoBtn');
-            submitBtn.innerText = "Publication en cours...";
+            submitBtn.innerText = "Publication...";
             submitBtn.disabled = true;
 
-            // Enregistrement INSERT dans Supabase
-            const { data, error } = await _supabase
-                .from('videos')
-                .insert([
-                    {
-                        category: currentActiveCategory,
-                        title: title,
-                        tag: tag,
-                        link: link,
-                        thumb: thumb
-                    }
-                ]);
+            const tableName = currentMode === 'client' ? 'clients' : 'videos';
+            const payload = currentMode === 'client' 
+                ? { client_slug: currentKey, title, tag, link, thumb }
+                : { category: currentKey, title, tag, link, thumb };
+
+            const { error } = await _supabase.from(tableName).insert([payload]);
 
             submitBtn.innerText = "Publier la vidéo";
             submitBtn.disabled = false;
 
             if (error) {
-                console.error("Erreur d'insertion Supabase :", error);
-                alert("Erreur lors de l'enregistrement dans Supabase : " + error.message);
+                alert("Erreur lors de l'enregistrement : " + error.message);
                 return;
             }
 
-            // Réinitialiser le formulaire
             document.getElementById('videoTitleInput').value = "";
             document.getElementById('videoTagInput').value = "";
             document.getElementById('videoLinkInput').value = "";
             document.getElementById('videoThumbInput').value = "";
 
             closeModal('addVideoModal');
-            await fetchAndRenderVideos();
+            
+            if (currentMode === 'client') {
+                await fetchAndRenderVideos('clients', 'client_slug', currentKey);
+            } else {
+                await fetchAndRenderVideos('videos', 'category', currentKey);
+            }
         }
 
-        // Suppression d'une vidéo dans Supabase
-        async function deleteVideo(id) {
-            const confirmDelete = confirm("Voulez-vous vraiment supprimer cette vidéo ?");
-            if (!confirmDelete) return;
+        // Supprimer une vidéo
+        async function deleteVideo(tableName, id) {
+            if (!confirm("Voulez-vous vraiment supprimer cette vidéo ?")) return;
 
-            const { error } = await _supabase
-                .from('videos')
-                .delete()
-                .eq('id', id);
+            const { error } = await _supabase.from(tableName).delete().eq('id', id);
 
             if (error) {
-                console.error("Erreur de suppression Supabase :", error);
-                alert("Erreur lors de la suppression : " + error.message);
+                alert("Erreur de suppression : " + error.message);
             } else {
-                await fetchAndRenderVideos();
+                if (currentMode === 'client') {
+                    await fetchAndRenderVideos('clients', 'client_slug', currentKey);
+                } else {
+                    await fetchAndRenderVideos('videos', 'category', currentKey);
+                }
             }
         }
 
@@ -662,8 +627,7 @@
             document.getElementById('main-page').style.display = "block";
             if (targetAnchor) {
                 setTimeout(() => {
-                    const el = document.querySelector(targetAnchor);
-                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                    document.querySelector(targetAnchor)?.scrollIntoView({ behavior: 'smooth' });
                 }, 50);
             } else {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -673,7 +637,7 @@
         // Modales & Utilitaires
         function openModal(id) { document.getElementById(id).classList.add('active'); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-        function closeModalOnOuterClick(event, id) { if (event.target.id === id) closeModal(id); }
+        function closeModalOnOuterClick(e, id) { if (e.target.id === id) closeModal(id); }
         function openContactModal() { openModal('contactModal'); }
 
         function copyEmail() {
